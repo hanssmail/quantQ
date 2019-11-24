@@ -35,7 +35,7 @@
     multinormalVariateCorr:multinormalVariateCorr+mu;
     // create a table, variables are named var1, var2,...
     :flip ({`$"var",string x} each 1+til N)!multinormalVariateCorr;
-};
+ };
 
 .quantQ.simul.getNormalVariate:{[nRows]
     // nRows -- dimension of the array

@@ -42,4 +42,4 @@
     isingModel[`priceIsing]:isingModel[`priceIsing] upsert (t+1;sum exec spin from 
         isingModel[`wallStreet]);
     :isingModel;
-};
+ };
