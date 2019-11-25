@@ -7,8 +7,6 @@
     :select sym, (-3#'volume) wavg'(-3#'price) from trades;
  };
 
-.quantQ.upd.trades newdata
-
 .quantQ.upd.trades:{[new]
     // newdata -- the incoming data sent by the upstream feedhandler or tickerplant, in table type format
     // aggregate the new data by time,volume and price
@@ -20,3 +18,6 @@
     :ret;
  };
 
+\
+
+.quantQ.upd.trades newdata
