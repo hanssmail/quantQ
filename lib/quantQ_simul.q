@@ -28,7 +28,7 @@
     // mu -- array of means
     // Sigma -- variance-covariance matrix
     // generate N times nRows array
-    multinormalVariate:{[nRows;x].quantQ.simul.getNormalVariate[nRows]}[nRows;] each til N;
+    multinormalVariate: .quantQ.simul.getNormalVariate[nRows] each til N;
     // multiply the multinormal variate by the Cholesky lower diagonal matrix
     multinormalVariateCorr:(.quantQ.simul.choleskyChB[Sigma]) mmu multinormalVariate;
     // add a mean of each process
@@ -41,29 +41,36 @@
     // nRows -- dimension of the array
     // the Box-Muller procedure; we have to call it (nRows%2) round-up times
     nCall:ceiling nRows%2;
-    // nCall calls of .quantQ.simul.genBoxMuller and then taking the first nRows outcomes
-    :(raze {.quantQ.simul.genBoxMuller[]} each til nCall)[til nRows];
+    // nCall calls of .quantQ.simul.genBoxMuller
+    :nRows#raze .quantQ.simul.genBoxMuller each til nCall;
  };
 
-.quantQ.simul.genBoxMuller:{[x]
-    // x -- two-dimensional array to transform
-    // generate 2-dimensional array with radius within (0,1) using convergence
-    x1x2:{[x] (2?2f)-1.0}/[{(((x[0]*x[0])+(x[1]*x[1]))>=1) or (((x[0]*x[0])+(x[1]*x[1]))=0.0)};(0.0;0.0)];
-    // use it as an input into .quantQ.simul.BoxMuller
-    :.quantQ.simul.BoxMuller[x1x2];
- };
+.quantQ.simul.radius:{[x] (x*x:x 0)+y*y:x 1 };
 
 .quantQ.simul.BoxMuller:{[x1x2]
     // x1x2 -- 2-dimensional array of uniform numbers
     // the radius of point in 2D space
-    rad:(x1x2[0]*x1x2[0])+x1x2[1]*x1x2[1];
+    rad:.quantQ.simul.radius x1x2;
     // the output is a 2-dimensional array
-    z1z2:(0 0f);
-    // the first normal variable
-    z1z2[0]:x1x2[0]*sqrt[(neg 2*log[rad])%rad];
-    // the second normal variable
-    z1z2[1]:x1x2[1]*sqrt[(neg 2*log[rad])%rad];
+    z1z2:x1x2 * sqrt -2*log[rad]%rad;
     :z1z2;
+ };
+
+.quantQ.simul.genBoxMuller:{[]
+    // start with 2 uniform numbers and use convergence to create a 2-dim array with radius within (0,1)
+    x1x2: {-1+2?2f}/[{[x](s=0)or 1<s:.quantQ.simul.radius x}; 0 0f];
+    // use it as an input into .quantQ.simul.BoxMuller
+    :.quantQ.simul.BoxMuller[x1x2]
+ };
+
+.quantQ.simul.genBoxMuller1:{[]
+    // alternate version of .quantQ.simul.genBoxMuller using self-reference
+    //  start with 2 uniform numbers and generate 2-dimensional array with radius within (0,1)
+    { $[(s<1)&0<s:(x*x)+y*y;
+        (x;y)*sqrt -2*log[s]%s;
+        .z.s . -1+2?2f
+        ]
+    } .-1+2?2f
  };
 
 .quantQ.simul.expRandomVariate:{[lambda]
