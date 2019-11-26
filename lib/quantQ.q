@@ -15,6 +15,6 @@
 -1"For available sub-namespaces, type key`.quantQ:";
 key`.quantQ
 -1"";
--1"For functions in a namespace, type .e.g key`.quantQ.rf";
+-1"For functions in a namespace, type .e.g \\f .quantQ.rf";
 -1"";
 
