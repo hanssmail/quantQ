@@ -24,9 +24,10 @@
  };
 
 .quantQ.ts.simAR:{[phi;eps]
+    // see also .quantQ.tse.simAR for an implementation using scan
     // phi -- list of parameters (phi1;...,phip)
     // eps -- list of random normal numbers
-    p:count phi;
+    p:count phi:reverse phi;
     x:(count eps)#0f;
     t:p;
     while[t<(count eps);
