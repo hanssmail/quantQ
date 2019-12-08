@@ -28,7 +28,7 @@
     // mu -- array of means
     // Sigma -- variance-covariance matrix
     // generate N times nRows array
-    multinormalVariate: .quantQ.simul.getNormalVariate[nRows] each til N;
+    multinormalVariate: {[nRows;x] .quantQ.simul.getNormalVariate[nRows] }[nRows] each til N;
     // multiply the multinormal variate by the Cholesky lower diagonal matrix
     multinormalVariateCorr:(.quantQ.simul.choleskyChB[Sigma]) mmu multinormalVariate;
     // add a mean of each process
