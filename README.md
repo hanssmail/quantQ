@@ -19,7 +19,7 @@ The naming convention for each .q file reflects the corresponding book chapter a
 | Section    | Note                                                  |
 |:-----------|:------------------------------------------------------|
 | 14.1.6.1   | Ordering of ```phi``` vector inside implementation of  ```.quantQ.ts.simAR``` should be reversed to be in line with definition 14.1 and example on page 276. Adressed in repo. Variation of the function using adverbs also provided, under ```.quantQ.tse.simAR``` |
-| 15.3       | Example following implementation of the Hamilton product (15.29-15.32) should read as ```.quantQ.quat.mult[quat1;quat3]```|
+| 15.3       | Example following implementation of the Hamilton product (15.29-15.32) should read as ```.quantQ.quat.mult[quat1;quat3]```. Definition of ```.quantQ.quat.mult``` has a typo which is fixed in the repo|
 |  | |
 
 
