@@ -17,10 +17,7 @@
     :@[qt;`i`j`k;neg]%qt wsum qt;
  };
 
-.quantQ.quat.norm:{[x]
-    // x -- quaternion
-    :sqrt x wsum x;
- };
+.quantQ.quat.norm:.quantQ.complex.norm;
 
 .quantQ.quat.conjugate:{[x]
     // x -- quaternion

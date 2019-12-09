@@ -1,5 +1,10 @@
 .quantQ.pi: acos -1;
 
+.quantQ.complex.norm:{[x]
+    // x -- quaternion
+    :sqrt x wsum x;
+ };
+
 .quantQ.complex.mult:{[x;y]
     :`re`im!(1 -1 wsum x*y;x wsum reverse value y);
  };
