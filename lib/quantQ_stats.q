@@ -96,7 +96,7 @@
     mn: min data;
     // sample max
     mx: max data;
-    :([] statistics: ("Sample mean";"Sample standard deviation";"Sample skewness";"Sample kurtosis";"Sample min"; "Sample max";"Number of observations";"Number of missing observations");values: (mu; sigma; S;K; mn; mx; Kurt; KminusN));
+    :([] statistics: ("Sample mean";"Sample standard deviation";"Sample skewness";"Sample kurtosis";"Sample min"; "Sample max";"Number of observations";"Number of missing observations");values: (mu; sigma; S;Kurt; mn; mx; K; KminusN));
  };
 
 .quantQ.stats.pValueTwoSided:{[x]
