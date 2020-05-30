@@ -15,6 +15,17 @@ The naming convention for each .q file reflects the corresponding book chapter a
 
 ## Errata
 
+### Chapter 7: Joins
+
+| Section       | Note                
+| ------------- |-------------------- 
+| 7.1           | The example of comma join corresponds to ```t1,t6``` and not ```t5,t6```.
+
+
+| Section       | Note                
+| ------------- |-------------------- 
+| 7.2.10        | In the text we state that *we aim to aggregate the data from the table dataSet2 over a window starting 1 minute prior to the trade and ending at the time of the trade.*; however, the ```window``` is defined as starting at time of the trade and ending 1 minute after the trade. The example should read ```window: (-00:01:00;0) +\: exec time from dataSet1;```.
+
 ### Chapter 14: Time Series Econometrics
 
 | Section       | Note                
@@ -29,4 +40,4 @@ The naming convention for each .q file reflects the corresponding book chapter a
 | 15.3          | Example following implementation of the Hamilton product (15.29-15.32) should read as ```.quantQ.quat.mult[quat1;quat3]```. Definition of ```.quantQ.quat.mult``` has a typo which is fixed in the repo    
 
 
- 
+
