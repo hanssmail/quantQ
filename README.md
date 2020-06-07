@@ -41,3 +41,13 @@ The naming convention for each .q file reflects the corresponding book chapter a
 
 
 
+## Extension beyond the book
+
+### Mathematical functions
+
+We have added ```.quantQ.math``` name space with various mathematical functions, constants and identities. Currently there constants, hyperbolic functions, number of special functions and polynomials (defined in the real domain), and the most frequently used PDF and CDF (normal distribution still in progress).
+
+### Biostatistics
+
+We have added into the ```.quantQ.stats``` name space functions to work with contingency tables, namely Exact Fisher test and Barnard test.
+ 
