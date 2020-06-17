@@ -143,7 +143,7 @@
     :?[x>=0;1-exp[neg lambda*x];neg[x]*0];
  };
  
-.quantQ.math.erlangPDF:{
+.quantQ.math.erlangPDF:{[x;k;K]
     // k -- shape, poasitive integer
     // K -- scale
     // x -- value
