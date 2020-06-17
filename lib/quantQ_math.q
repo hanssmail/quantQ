@@ -144,7 +144,7 @@
  };
  
 .quantQ.math.erlangPDF:{[x;k;K]
-    // k -- shape, poasitive integer
+    // k -- shape, positive integer
     // K -- scale
     // x -- value
     :xexp[(1.0%K);k]*xexp[x;k-1]*exp[neg x%K]%.quantQ.stats.factorial[k-1];
