@@ -45,6 +45,11 @@
         }[yy;y;cbm;bmi;xi;rule;classes] each j;
     :(j;info)@\:first idesc flip[info]0;
  };
+ 
+// Wrap the rule -- helper function
+.quantQ.trees.runRule:{[rule;i;j;x] 
+    :rule[x i;j];
+ };
 
 // Choose optimal split for a node
 .quantQ.trees.chooseSplit:{[xy;treeinput]
