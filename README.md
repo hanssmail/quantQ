@@ -50,4 +50,13 @@ We have added ```.quantQ.math``` name space with various mathematical functions,
 ### Biostatistics
 
 We have added into the ```.quantQ.stats``` name space functions to work with contingency tables, namely Exact Fisher test and Barnard test.
+
+### Optimization
+
+We have added a native implementation of Nelder-Mead (amoeba) optimization method. Functions can be found in the ```.quantQ.amoeba``` name space. The illustration shows solution to Rosenbrock's function.  
+
+### Bioinformatics
+
+We have implemented the Needleman-Wunsch algorithm developed in bioinformatics which can be used to align two sequences (nucleotide sequences or general finite-length sequences) using principles of dynamic programming. Functions are within the ```.quantQ.stats``` name space. 
+
  
