@@ -106,3 +106,49 @@
 // seq1:enlist `A; seq2:enlist `A;
 // .quantQ.stats.NeedlemanWunsch[seq1;seq2]
 
+
+
+// Levenshtein Distance using Wagner-Fischer algorithm
+.quantQ.stats.LevenshteinDistance:{[params;seq1;seq2]
+    // params -- dictionary with parameters
+    // seq1 -- the source sequence which is compared against the reference sequence
+    // seq2 -- the reference sequence
+    
+    // set default parameters
+    params:((`delete`insert`substitute)!(1.0;1.0;1.0)),params;
+    // Wagner-Fischer algorithm
+    Nseq1: count seq1;    
+    Nseq2: count seq2;  
+    distanceMatrix: ((1+Nseq2);(1+Nseq1))#((1+Nseq1)*(1+Nseq2))#0.0;
+    // delete elements of the source 
+    distanceMatrix[0;]:params[`delete]* til Nseq1+1;
+    // insert elements to the reference 
+    distanceMatrix[;0]:params[`delete]* til Nseq2+1;
+    // populate the matrix
+    iSeq2:1; 
+    while[iSeq2<Nseq2+1;
+        iSeq1:1;
+        while[iSeq1<Nseq1+1;
+            cost:params[`substitute];
+            if[seq1[iSeq1-1]=seq2[iSeq2-1];
+            cost:0
+            ];
+            distanceMatrix[iSeq2;iSeq1]:min[(
+                distanceMatrix[iSeq2-1;iSeq1]+params[`delete];
+                distanceMatrix[iSeq2;iSeq1-1]+params[`insert];
+                distanceMatrix[iSeq2-1;iSeq1-1]+cost
+                                     )];
+            iSeq1+:1;    
+        ];
+        iSeq2+:1;
+    ];
+    // return the final distanceMatrix and value for comparison of two sequences
+    :(`distance`distanceMatrix)!(distanceMatrix[iSeq2-1;iSeq1-1];distanceMatrix);
+ };
+
+// example
+// seq1:`H`E`L`L`O; seq2:`W`O`R`L`D;
+// .quantQ.stats.LevenshteinDistance[()!();seq1;seq2]
+
+
+

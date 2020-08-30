@@ -57,6 +57,8 @@ We have added a native implementation of Nelder-Mead (amoeba) optimization metho
 
 ### Bioinformatics
 
-We have implemented the Needleman-Wunsch algorithm developed in bioinformatics which can be used to align two sequences (nucleotide sequences or general finite-length sequences) using principles of dynamic programming. Functions are within the ```.quantQ.stats``` name space. 
+We have implemented the Needleman-Wunsch algorithm developed in bioinformatics which can be used to align two sequences (nucleotide sequences or general finite-length sequences) using principles of dynamic programming. Functions are within the ```.quantQ.stats``` name space. Levenshtein distance calculated with Wagner-Fischer algorithm has been added.
 
- 
+### Dynamic Time Warp
+
+We have added the algorithms to perform the Dynamic Time Warp calculations in the ```.quantQ.dtw``` name space. Details of the algorithm can be found [here](../data/dtw_intro.pdf).
