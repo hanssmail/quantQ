@@ -61,4 +61,4 @@ We have implemented the Needleman-Wunsch algorithm developed in bioinformatics w
 
 ### Dynamic Time Warp
 
-We have added the algorithms to perform the Dynamic Time Warp calculations in the ```.quantQ.dtw``` name space. Details of the algorithm can be found [here](../data/dtw_intro.pdf).
+We have added the algorithms to perform the Dynamic Time Warp calculations in the ```.quantQ.dtw``` name space. Details of the algorithm can be found [here](data/dtw_intro.pdf).
