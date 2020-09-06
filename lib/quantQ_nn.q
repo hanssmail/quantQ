@@ -36,6 +36,12 @@
     :sum sum z*z:(argX-argY);
  };
 
+.quantQ.nn.funcNN: `classifier`multiClassifier`nonlinearReg!
+                   (.quantQ.nn.sigmoid;.quantQ.nn.softmax;.quantQ.nn.linearNN);
+                   
+.quantQ.nn.funcErrNN: `classifier`multiClassifier`nonlinearReg!
+                      (.quantQ.nn.sigmoidErr;.quantQ.nn.softmaxErr;.quantQ.nn.linearNNErr);
+
 .quantQ.nn.weightNNInit:{[argIn;argOut]
     // argIn -- number of input arguments
     // argOut -- number of output arguments
