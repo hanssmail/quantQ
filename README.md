@@ -37,9 +37,14 @@ The naming convention for each .q file reflects the corresponding book chapter a
 
 | Section       | Note                
 | ------------- |-------------------- 
-| 15.3          | Example following implementation of the Hamilton product (15.29-15.32) should read as ```.quantQ.quat.mult[quat1;quat3]```. Definition of ```.quantQ.quat.mult``` has a typo which is fixed in the repo    
+| 15.3          | Example following implementation of the Hamilton product (15.29-15.32) should read as ```.quantQ.quat.mult[quat1;quat3]```. Definition of ```.quantQ.quat.mult``` has a typo which is fixed in the repo.    
 
 
+### Chapter 22: Neural Networks
+
+| Section       | Note                
+| ------------- |-------------------- 
+| 22.2          | Missing functions ```.quantQ.nn.funcNN``` and ```.quantQ.nn.funcErrNN``` have been added to the repo.
 
 ## Extension beyond the book
 
