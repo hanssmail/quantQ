@@ -93,7 +93,7 @@
     :bucket;
  };
 
-.quantQ.olsTab:{[tab]
+.quantQ.ols.olsTab:{[tab]
     // tab -- table with data
     // names
     yName:first cols tab;
