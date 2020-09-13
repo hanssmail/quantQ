@@ -31,7 +31,7 @@
 .quantQ.ols.logL:{[n;RSS]
     // n -- size of the sample
     // RSS -- Residual sum of squares
-    :neg[log[2*acos-1]*n%2.0]+neg[log[sqrt[RSS%n]]*n]+neg[(1.0%(2.0%n))];
+    :neg[log[2*acos neg 1]*n%2.0]+neg[log[sqrt[RSS%n]]*n]+neg[(1.0%(2.0%n))];
  };
 
 .quantQ.ols.AIC:{[p;logL]
