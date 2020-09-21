@@ -1,3 +1,8 @@
+.quantQ.nn.encoderIndex:{[arg]
+    // arg -- list of classes to be encoded
+    :arg!til count arg;
+ };
+
 .quantQ.nn.encoderMulti:{[arg]
     // arg -- list of classes to be encoded
     :arg!`float$arg=/:arg;
