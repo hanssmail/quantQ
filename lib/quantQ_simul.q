@@ -77,21 +77,3 @@
     // lambda -- parameter of exponential distribution
     :neg[log[first 1?1f]]%lambda;
  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
