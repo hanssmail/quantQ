@@ -8,6 +8,15 @@
     :arg!`float$arg=/:arg;
  };
 
+.quantQ.nn.probToClasses:{[arg]
+    // arg -- the probabilities of belonging to a particular class as returned by `multiClassifier
+    raze $[1=count arg[0];`int$({x>=0.5}')arg;(til count arg[0])where each(arg=')max each arg]
+ };
+
+.quantQ.nn.accuracy:{[true;pred]
+    :(sum true=pred)%count true;
+ };
+
 .quantQ.nn.sigmoid:{[arg]
     // arg -- argument of the function
     :1%1+exp neg arg;
