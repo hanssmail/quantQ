@@ -73,7 +73,7 @@
 .quantQ.nn.modelNN:{[input;output;nNeurons;typeTerminal;argTerminal;learningRate;monitorConvergence;func]
     // input -- array of input values
     // output -- array of output values
-    // nNeurons -- number of neurons in hiddne layer
+    // nNeurons -- number of neurons in hidden layer
     // typeTerminal -- type of terminal condition:`count`relativeError
     // argTerminal -- parameter for terminal condition
     // learningRate -- learning rate for update
