@@ -100,3 +100,13 @@
     ];
  };
 
+.quantQ.nn.predict:{[input;func;model]
+    // input -- array of input values
+    // func -- purpose of the NN: `classifier`multiClassifier`nonlinearReg
+    // model -- the model, as output by .quantQ.nn.modelNN
+    model:$[98h=type model;last model;model];
+    input:1f,'input;
+    hiddenLayer:1.0,/:.quantQ.nn.sigmoid[input mmu model[`parsIn2Hid]];
+    outputLayer:.quantQ.nn.funcNN[func][hiddenLayer mmu model[`parsHid2Out]];
+    outputLayer
+ };
