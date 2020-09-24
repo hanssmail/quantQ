@@ -116,6 +116,6 @@ bucket:(`nNeurons`typeTerminal`argTerminal`learningRateFunc`pKeepInputFunc`pKeep
 
 The estimation is run as usual:
 
-````
+```
 model:.quantQ.nn.modelNNDeep[input;output;bucket]
 ```
