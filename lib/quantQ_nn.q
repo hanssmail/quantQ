@@ -1,6 +1,20 @@
+.quantQ.nn.encoderIndex:{[arg]
+    // arg -- list of classes to be encoded
+    :arg!til count arg;
+ };
+
 .quantQ.nn.encoderMulti:{[arg]
     // arg -- list of classes to be encoded
     :arg!`float$arg=/:arg;
+ };
+
+.quantQ.nn.probToClasses:{[arg]
+    // arg -- the probabilities of belonging to a particular class as returned by `multiClassifier
+    raze $[1=count arg[0];`int$({x>=0.5}')arg;(til count arg[0])where each(arg=')max each arg]
+ };
+
+.quantQ.nn.accuracy:{[true;pred]
+    :(sum true=pred)%count true;
  };
 
 .quantQ.nn.sigmoid:{[arg]
@@ -73,7 +87,7 @@
 .quantQ.nn.modelNN:{[input;output;nNeurons;typeTerminal;argTerminal;learningRate;monitorConvergence;func]
     // input -- array of input values
     // output -- array of output values
-    // nNeurons -- number of neurons in hiddne layer
+    // nNeurons -- number of neurons in hidden layer
     // typeTerminal -- type of terminal condition:`count`relativeError
     // argTerminal -- parameter for terminal condition
     // learningRate -- learning rate for update
@@ -100,3 +114,13 @@
     ];
  };
 
+.quantQ.nn.predict:{[input;func;model]
+    // input -- array of input values
+    // func -- purpose of the NN: `classifier`multiClassifier`nonlinearReg
+    // model -- the model, as output by .quantQ.nn.modelNN
+    model:$[98h=type model;last model;model];
+    input:1f,'input;
+    hiddenLayer:1.0,/:.quantQ.nn.sigmoid[input mmu model[`parsIn2Hid]];
+    outputLayer:.quantQ.nn.funcNN[func][hiddenLayer mmu model[`parsHid2Out]];
+    outputLayer
+ };

@@ -181,7 +181,3 @@
     // return list of coresponding RMSEs
     :(.quantQ.ols.inOut[y;x;] each foldFlag)[`RMSE];
  };
-
-
-
-
