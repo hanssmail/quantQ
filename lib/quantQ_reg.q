@@ -93,7 +93,7 @@
         // find variable with largest correlation
         betaUsed:z=max z:abs cor[r;] each xS;
         // set the direction
-        betaDir:"f"$betaUsed;
+        betaDir:"f"$betaUsed*signum[cor[r;] each xS];
         // update r
         r-:sum step*betaDir*xS;
         // update beta
