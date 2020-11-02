@@ -43,6 +43,24 @@
  :alpha
  }
 
+/ compute the backward algorithm beta[t;j] = Pr(ot+1,ot+2,..,oT | qt=j, a,b,pi)
+
+.quantQ.hmm.backward:{[a;b;pi;obs]
+ T:count obs;
+ N:count a;
+ beta:(T;N)#0f;
+ beta[T-1;]:1f;
+ t:T-2;
+ while[t>=0;
+  i:0;
+  while[i<N;
+   beta[t;i]:sum a[i;]*b[;obs[t+1]]*beta[t+1;];
+   i:i+1];
+  t:t-1;
+  ];
+ :beta
+ }
+
 
 / returns the likelihood and the index of the most likely hidden state sequence that generates the given observations obs.
 
@@ -98,3 +116,4 @@
   t:t+1;
   ];
  obs}
+
