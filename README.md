@@ -50,23 +50,23 @@ The naming convention for each .q file reflects the corresponding book chapter a
 
 ### Mathematical functions
 
-We have added ```.quantQ.math``` name space with various mathematical functions, constants and identities. Currently, there are constants, hyperbolic functions, number of special functions and polynomials (defined in the real domain), and the most frequently used PDF and CDF (normal distribution still in progress).
+We have added ```.quantQ.math``` namespace with various mathematical functions, constants and identities. Currently, there are constants, hyperbolic functions, number of special functions and polynomials (defined in the real domain), and the most frequently used PDF and CDF (normal distribution still in progress).
 
 ### Biostatistics
 
-We have added into the ```.quantQ.stats``` name space functions to work with contingency tables, namely Exact Fisher test and Barnard test.
+We have added into the ```.quantQ.stats``` namespace functions to work with contingency tables, namely Exact Fisher test and Barnard test.
 
 ### Optimization
 
-We have added a native implementation of Nelder-Mead (amoeba) optimization method. Functions can be found in the ```.quantQ.amoeba``` name space. The illustration shows a solution to Rosenbrock's function.  
+We have added a native implementation of Nelder-Mead (amoeba) optimisation method. Functions can be found in the ```.quantQ.amoeba``` namespace. The illustration shows a solution to Rosenbrock's function.  
 
 ### Bioinformatics
 
-We have implemented the Needleman-Wunsch algorithm developed in bioinformatics which can be used to align two sequences (nucleotide sequences or general finite-length sequences) using principles of dynamic programming. Functions are within the ```.quantQ.stats``` name space. The local matching using the Smith-Waterman algorithm is available as well. Levenshtein distance calculated with Wagner-Fischer algorithm has been added.
+We have implemented the Needleman-Wunsch algorithm developed in bioinformatics which can be used to align two sequences (nucleotide sequences or general finite-length sequences) using principles of dynamic programming. Functions are within the ```.quantQ.stats``` namespace. The local matching using the Smith-Waterman algorithm is available as well. Levenshtein distance calculated with Wagner-Fischer algorithm has been added.
 
 ### Dynamic Time Warp
 
-We have added the algorithms to perform the Dynamic Time Warp calculations in the ```.quantQ.dtw``` name space. Details of the algorithm can be found [here](data/dtw_intro.pdf).
+We have added the algorithms to perform the Dynamic Time Warp calculations in the ```.quantQ.dtw``` namespace. Details of the algorithm can be found [here](data/dtw_intro.pdf).
 
 ### Deep Neural Networks
 
@@ -81,3 +81,9 @@ We have implemented the stochastic optimisation, which can be used to minimise t
 We have added the Support Vector Machine for binary classification using the Soft Margin and Stochastic Gradient Descent (using one observation per step). Functions are specified with a set of the default setup, which is customised based on the provided dataset. The Soft Margin specification is provided with regularisation parameter, which can be optimised using the built-in n-fold cross-validation method.
 
 The implementation includes a function which calculates more than 20 statistics used to evaluate the binary classification, including specificity, accuracy, precision, or F1. More examples can be found [here](quantQ_svm.md). The implementation is part of the ```.quantQ.svm``` namespace.
+
+### Poisson Regression
+
+We have added the library with the Poisson distribution and the Poisson regression to estimate the integer-valued Poisson process. The functions are based on the maximum likelihood optimised using routines from ```.quantQ.opt``` library. The library also contains the ```L2```-regularised version with ```n```-fold cross-validation.
+
+Examples and basic usage of the library can be found in [here](quantQ_pois.md). The implementation is part of the ```.quantQ.pois``` namespace.
