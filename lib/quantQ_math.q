@@ -174,4 +174,65 @@
     :reciprocal[.quantQ.math.gammaApprox[k;n]]
         *.quantQ.math.gammaIncompleteLowerApprox[k;x%K;n]; 
  };
+ 
+ .quantQ.math.normalPDF:{[x;mu;sigma2]
+    // x -- value
+    // mu -- mean
+    // sigma2 -- variance
+    x:"f"$x;
+    : (1.0%sqrt 4*asin[1]*sigma2)*exp[neg (1.0%2*sigma2)*t*t:(x-mu)]
+ };
+ 
+ .quantQ.math.normalCDF:{[x;mu;sigma2]
+    // x -- value
+    // mu -- mean
+    // sigma2 -- variance
+    sigma:sqrt[sigma2];
+    x:"f"$x;
+    // hardcoded step size
+    step:sigma%10000;
+    // starting point
+    sPoint:min[(neg[2*sigma]+(x-mu)%sigma;-6*sigma)];
+    // the CDF (numerical integration)
+    :sum step*.quantQ.math.normalPDF[;mu;sigma] each sPoint+step*til floor[(x-sPoint)%step];
+ };
+       
+.quantQ.math.normalMultiPDF:{[x;mu;sigma2]
+    // x -- value
+    // mu -- array of means
+    // sigma2 -- covariance matrix
+    x:"f"$x;
+    // dimension of the x
+    dimX: count x;
+    // factor
+    fact:xexp[(4*asin[1]);neg dimX%2.0]%sqrt .quantQ.mat.det[sigma2];
+    // output
+    : fact*exp[neg[0.5]*sum (x-mu)*inv[sigma2] mmu (x-mu)];
+ };    
+//  x:(0.2;0.2); mu:(0.0;0.0); sigma2:((1.0;0.2);(0.2;1.0)); .quantQ.math.normalMultiPDF[x;mu;sigma2]      
+
     
+// Approximating Multivartiate CDF using Tetrachorix expansion
+// Bivariate Tetrachoric expansion
+.quantQ.math.tetrachoricExpansionBivar:{[x;rho;n]
+    // x -- 2-dim array at which we evaluate the expansion
+    // rho -- correlation between two N(0,1) processes
+    // n -- order of expansion
+
+    // CDF part
+    out:.quantQ.math.normalCDF[x[0];0.0;1.0]*.quantQ.math.normalCDF[x[1];0.0;1.0];
+    // add expansion in rho
+    out+: .quantQ.math.normalPDF[x[0];0.0;1.0]*.quantQ.math.normalPDF[x[1];0.0;1.0]*
+        sum {[x;rho;k] :(xexp[rho;k]%.quantQ.stats.factorial[k]) *
+               .quantQ.math.probHermitePol[x[0];k] *
+               .quantQ.math.probHermitePol[x[1];k]   
+        }[x;rho;] each til 1+n;
+    // output
+    :out;
+ };
+// Example x:(0.0;0.0); rho:0.3;n:4; .quantQ.math.tetrachoricExpansion[x;rho;n]
+
+// TODO:
+// Trivariate Tetrachoric expansion
+
+// General Tetrachoric expansion
