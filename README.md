@@ -50,7 +50,7 @@ The naming convention for each .q file reflects the corresponding book chapter a
 
 ### Mathematical functions
 
-We have added ```.quantQ.math``` namespace with various mathematical functions, constants and identities. Currently, there are constants, hyperbolic functions, number of special functions and polynomials (defined in the real domain), and the most frequently used PDF and CDF (normal distribution still in progress).
+We have added ```.quantQ.math``` namespace with various mathematical functions, constants and identities. Currently, there are constants, hyperbolic functions, number of special functions and polynomials (defined in the real domain), and the most frequently used PDF and CDF. In order to obtain the multivariate normal distribution, we have included tetrachoric expansion.
 
 ### Biostatistics
 
@@ -87,3 +87,10 @@ The implementation includes a function which calculates more than 20 statistics 
 We have added the library with the Poisson distribution and the Poisson regression to estimate the integer-valued Poisson process. The functions are based on the maximum likelihood optimised using routines from ```.quantQ.opt``` library. The library also contains the ```L2```-regularised version with ```n```-fold cross-validation.
 
 Examples and basic usage of the library can be found in [here](quantQ_pois.md). The implementation is part of the ```.quantQ.pois``` namespace.
+
+
+### Quantum Computing
+
+We have added name space ```.quantQ.quantum``` which contains a set of routines to set up and perform quantum computing using quibits. The library is not connected to any actual quantum computer and is for demonstration purposes only.
+
+Examples and basic library usage can be found in [here](quantQ_quantum.md).
