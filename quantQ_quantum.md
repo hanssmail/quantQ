@@ -1,7 +1,6 @@
 # Quantum Computing in quantQ
 
-The library ```.quantQ.quantum``` is derived from the qiskit implementation of the quantum computing. This library aims to show the versatility of q and learn elements of quantum computing. For readers seriously interested in quantum computing, we recommend qiskit as a nice platform to start with as well as to learn about quantum computing, see  
-[here](https://qiskit.org/).
+The library ```.quantQ.quantum``` is derived from the qiskit implementation of the quantum computing. This library aims to show the versatility of q and learn elements of quantum computing. For readers seriously interested in quantum computing, we recommend qiskit as a nice platform to start with as well as to learn about quantum computing, see [here](https://qiskit.org/).
 
 In a nutshell, we define two objects: the quantum state composed of ```n``` quibits, and the bench, which is composed of a set of quantum gates. The quantum states propagate through the bench---it interacts with the individual elements---and changes its state. At the end, we take a measurement of the propagated state.
 
