@@ -43,3 +43,36 @@
         isingModel[`wallStreet]);
     :isingModel;
  };
+
+.quantQ.ephys.oneRunIsing_v2:{[isingModel]
+    // isingModel -- object with all data
+    // randomly choose one candidate to update
+    pivot:2?isingModel[`nGrid];
+    // recover price
+    price:last isingModel[`priceIsing][`price];
+    t:last isingModel[`priceIsing][`t];
+    // calculate local energy
+    term1: (first exec spin from isingModel[`wallStreet] where coord in enlist pivot)*sum 
+        exec spin from isingModel[`wallStreet] where coord in isingModel[`getSquareAround][isingModel[`nGrid];pivot];
+    term2:isingModel[`alpha]*abs[price]*first exec spin from isingModel[`wallStreet] 
+        where coord in enlist pivot;
+    localEnergy:term1-term2;
+    // probability for positive spin
+    pPos:isingModel[`probPositiveSpin][isingModel[`beta];localEnergy];   
+    // set the new spin
+    newSpin:$[(first 1?1.0)<=pPos;1;-1];
+    isingModel[`wallStreet]:update spin:newSpin from isingModel[`wallStreet] 
+        where coord in enlist pivot;
+    // update price and time in the priceIsing table
+    isingModel[`priceIsing]:isingModel[`priceIsing] upsert (t+1;avg exec spin from 
+        isingModel[`wallStreet]);
+    :isingModel;
+ };
+
+.quantQ.ephys.entropy:{[pb]
+    // pb -- probability 
+    :$[(pb=0) or (pb=1);0f;neg pb*log pb];
+ };
+
+
+
