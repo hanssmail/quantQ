@@ -1,4 +1,4 @@
-# Quantum Computation in quantQ
+# Quantum Computing in quantQ
 
 The library ```.quantQ.quantum``` is derived from the qiskit implementation of the quantum computing. This library aims to show the versatility of q and learn elements of quantum computing. For readers seriously interested in quantum computing, we recommend qiskit as a nice platform to start with as well as to learn about quantum computing, see  
 [here](https://qiskit.org/).
