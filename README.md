@@ -94,3 +94,9 @@ Examples and basic usage of the library can be found in [here](quantQ_pois.md). 
 We have added name space ```.quantQ.quantum``` which contains a set of routines to set up and perform quantum computing using quibits. The library is not connected to any actual quantum computer and is for demonstration purposes only.
 
 Examples and basic library usage can be found in [here](quantQ_quantum.md).
+
+### Topological Data Analysis
+
+We have added the library ```.quantQ.tda``` which allows us to perform the topological data analysis for a cloud on ```n```-dimensional points. The routines provided include calculation of the distance between points, identification of the all Vietoris-Rips complexes given the provided threshold, the routine to calculate all unique loops, and several analytical functions to get insight into data using the TDA. 
+
+Examples and basic library usage can be found in [here](quantQ_tda.md).
