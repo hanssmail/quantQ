@@ -84,8 +84,7 @@
  };
 
 // dictionary with single quibit operations -- all supported elements here
-.quantQ.quantum.singleDict:
-(`PauliX`PauliY`PauliZ`One`Null`U2`U1`H`S`Sconj`T`Tconj`Rx`Ry`Rz)!(
+.quantQ.quantum.singleDict:(`PauliX`PauliY`PauliZ`One`Null`U2`U1`H`S`Sconj`T`Tconj`Rx`Ry`Rz)!(
     (.quantQ.quantum.PauliX;0b);
     (.quantQ.quantum.PauliY;0b);
     (.quantQ.quantum.PauliZ;0b);
@@ -124,7 +123,7 @@
     // mat1, mat2 -- two complex matrices, mat1 is 2x2
     // create tensor
     tensor: ((.quantQ.quantum.multConstMat[mat1[0;0];mat2];.quantQ.quantum.multConstMat[mat1[0;1];mat2]);
-(.quantQ.quantum.multConstMat[mat1[1;0];mat2];.quantQ.quantum.multConstMat[mat1[1;1];mat2]));
+        (.quantQ.quantum.multConstMat[mat1[1;0];mat2];.quantQ.quantum.multConstMat[mat1[1;1];mat2]));
     // translate into bigger matrix
     tensorMat:raze {[x] {[x;y]  raze (x;y)}'[first x;last x]}   each tensor;
     // output
@@ -344,18 +343,13 @@
     benchUpdate: flip raze[(`index;{ `$"quibit",string[x]} each til Nquibits)]!raze[((1+max exec index from bench[`view]);enlist each {[n;cid;tid] t:n#`$"||";t[cid]:`cCNOT;t[tid]:`tCNOT;:t; }[Nquibits;cid;tid])];
     // return the updated bench
     :(`bench`view)!(benchOut;(bench[`view],benchUpdate));
- };
+  };
  // bench3:  .quantQ.quantum.appendCNOTMat[bench2;0;2]
  // bench3[`view]
  // count bench3[`bench]    
-    
-    
+   
 // dictionary with double quibit operations -- all supported elements here
-.quantQ.quantum.doubleDict:
-(enlist `CNOT)!(enlist (.quantQ.quantum.appendCNOTMat;0b));
-    
-    
-    
+.quantQ.quantum.doubleDict:(enlist `CNOT)!(enlist (.quantQ.quantum.appendCNOTMat;0b));
     
 /////////////////////////////////////////////////  
 // Ideas    
