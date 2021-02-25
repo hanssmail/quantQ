@@ -100,3 +100,7 @@ Examples and basic library usage can be found in [here](quantQ_quantum.md).
 We have added the library ```.quantQ.tda``` which allows us to perform the topological data analysis for a cloud on ```n```-dimensional points. The routines provided include calculation of the distance between points, identification of the all Vietoris-Rips complexes given the provided threshold, the routine to calculate all unique loops, and several analytical functions to get insight into data using the TDA. 
 
 Examples and basic library usage can be found in [here](quantQ_tda.md).
+
+### Utility Library
+
+We have added the library ```.quantQ.util``` with various utility functions.
