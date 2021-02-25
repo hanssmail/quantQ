@@ -181,3 +181,26 @@
     // return list of coresponding RMSEs
     :(.quantQ.ols.inOut[y;x;] each foldFlag)[`RMSE];
  };
+
+//////////////////////////////////////////////////
+// R2 with groupBy analytics
+.quantQ.ols.byR2:{[tab]
+    // tab -- `y`yPred`groupBy
+    // rename columns
+    tab: `y`yPred`groupBy xcol tab;
+    // R2 by groups
+    tabR2: `byR2 xasc select byR2: .quantQ.ols.rSquared[y;yPred] by groupBy from tab;
+    // sorted groupBy indices
+    groupBySorted: exec groupBy from tabR2;
+    // output table with cumulative R2 
+    :update r2: .quantQ.ols.rSquared[y;yPred] by 1 from tabR2 lj 1!{([] groupBy:x;byR2Cumul:y)}[groupBySorted;] 
+    {[tab;gBy] first exec r2 from select r2:.quantQ.ols.rSquared[y;yPred] by 1 from tab where groupBy in gBy  }[tab;] 
+    each {y _ x}[groupBySorted;] each til count groupBySorted;
+ };
+ 
+// example
+// y: neg[0.5]+1000?1.0;
+// groupBy: raze {50#x} each til 20;
+// yPred: y+raze ((neg[0.45]+50?0.9);(neg[0.4]+50?0.8);(neg[0.3]+50?0.6);neg[0.15]+(850?0.3));
+// tab:([] y;yPred;groupBy);
+// .quantQ.ols.byR2[tab] 
