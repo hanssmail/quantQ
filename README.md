@@ -108,3 +108,7 @@ We have added the library ```.quantQ.util``` with various utility functions.
 ### Hopfield Neural Networks
 
 We have added the library ```.quantQ.hopf``` to define and work with Hopfield networks. In addition, we have added Hebbian descent to calculate train the network for a provided input/output.
+
+### Technical Analysis
+
+We have added the library ```.quantQ.ta``` which comprises a growing list of technical indicators from what is known as Technical Analysis. The details of the library can be found in [here](quantQ_ta.md).
