@@ -46,7 +46,7 @@ with default values of the ```memory``` being set to ```10```.
 
 The table is updated as:
 
-| c	| c	|
+| c	| t	|
 |  ----- |  ---- |
 | ret | f |
 | retMA20	| f |
@@ -66,7 +66,7 @@ emaNew = column * (2.0%(memory+1))+ emaOld * (1-2.0%(memory+1))
 
 The function updates the table as:
 
-| c	| c	|
+| c	| t	|
 |  ----- |  ---- |
 | ret | f |
 | retEMA20	| f |
