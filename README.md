@@ -112,3 +112,7 @@ We have added the library ```.quantQ.hopf``` to define and work with Hopfield ne
 ### Technical Analysis
 
 We have added the library ```.quantQ.ta``` which comprises a growing list of technical indicators from what is known as Technical Analysis. The details of the library can be found in [here](quantQ_ta.md).
+
+### RSA Cryptoanalysis
+
+We have added the library ```.quantQ.ta``` which 
