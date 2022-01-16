@@ -115,4 +115,4 @@ We have added the library ```.quantQ.ta``` which comprises a growing list of tec
 
 ### RSA Cryptoanalysis
 
-We have added the library ```.quantQ.ta``` which 
+We have added the library ```.quantQ.rsa```. The library contains the implementation of the RSA algorithm to encrypt message using public and private key. The purpose of the library is to illustrate the RSA concept. The library contains several additional functions to work with prime numbers and perform factorisation.  
