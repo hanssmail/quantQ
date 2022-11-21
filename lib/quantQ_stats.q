@@ -324,3 +324,10 @@
 .quantQ.stats.normTable:((0.0005;3.290527);(0.005;2.575829);(0.01;2.326348);(0.495;0.01253347);(0.5;0));
 
 .quant.stats.runs:{[x] 0 x\x}"f"$;
+
+// generalised Binomial coefficient
+.quantQ.stats.binomialGen:{[alpha;n]
+    // alpha -- genral number
+    // n -- integer
+    :prd[alpha-til n]%.quantQ.stats.factorial[n];
+ }; 

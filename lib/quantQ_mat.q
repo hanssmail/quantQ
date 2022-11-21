@@ -235,3 +235,39 @@
     // output determinant
     :det;
  };
+
+.quantQ.mat.DenmanBeavers:{[bucket;mat]
+    // mat -- matrix
+    // bucket -- parameters
+    bucket:(enlist[`maxIter]!enlist[1000]), bucket;
+    unit:.quantQ.mat.diagMatrix[count mat];
+    // iteration
+    res:({[x]     
+        x1:0.5*(first[x]+inv last[x]);
+        x2:0.5*(last[x]+inv first[x]);
+    :(x1;x2);}/)[bucket[`maxIter];(mat;unit)];
+    :first[res];
+ };
+
+.quantQ.mat.pow:{[mat;n]
+    // mat -- matrix
+    // pow -- power
+    :last ({[x] (first[x];first[x] mmu last[x])  }/)[n;(mat;.quantQ.mat.diagMatrix[count mat])];
+ };
+
+.quantQ.mat.powerSeriesSq:{[bucket;mat]
+    // mat -- matrix
+    // bucket -- parameters
+    bucket:(enlist[`maxIter]!enlist[100]), bucket;
+    :sum {[mat;n] 
+        // mat -- matrix
+        // n -- coeff
+        :xexp[-1.0;n]*.quantQ.stats.binomialGen[0.5;n]*.quantQ.mat.pow[.quantQ.mat.diagMatrix[count mat]-mat;n];
+    }[mat;] each til bucket[`maxIter];
+ }; 
+ 
+.quantQ.mat.covEmpTab:{[tab]
+    // tab -- table with features
+    :{(1.0%count[x])*flip[x] mmu x}  (flip value flip tab);
+ }; 
+

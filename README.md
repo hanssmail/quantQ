@@ -116,3 +116,10 @@ We have added the library ```.quantQ.ta``` which comprises a growing list of tec
 ### RSA Cryptoanalysis
 
 We have added the library ```.quantQ.rsa```. The library contains the implementation of the RSA algorithm to encrypt message using public and private key. The purpose of the library is to illustrate the RSA concept. The library contains several additional functions to work with prime numbers and perform factorisation.  
+
+### Random Matrix Theory
+
+We have added the library ```.quantQ.rmt```. The library contains implementation of Excess Out-of-Sample Risk and Fleeting Modes paper by Bouchaud et al. [here](https://arxiv.org/abs/2205.01012). The algorithm performs the comparison of two datasets in terms of their empirical covariance matrices using the Random Matrix Theory. In order to implement the algorithm, we have added the Denman-Bevaers and power series algorithms to calculate the square-root of the matrix along with several utility functions. Further, ```.quantQ.stats``` has been extended by generalised binomial number calculator.
+
+
+
