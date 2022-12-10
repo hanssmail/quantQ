@@ -119,7 +119,9 @@ We have added the library ```.quantQ.rsa```. The library contains the implementa
 
 ### Random Matrix Theory
 
-We have added the library ```.quantQ.rmt```. The library contains implementation of Excess Out-of-Sample Risk and Fleeting Modes paper by Bouchaud et al. [here](https://arxiv.org/abs/2205.01012). The algorithm performs the comparison of two datasets in terms of their empirical covariance matrices using the Random Matrix Theory. In order to implement the algorithm, we have added the Denman-Bevaers and power series algorithms to calculate the square-root of the matrix along with several utility functions. Further, ```.quantQ.stats``` has been extended by generalised binomial number calculator.
+We have added the library ```.quantQ.rmt```. The library contains implementation of Excess Out-of-Sample Risk and Fleeting Modes paper by Bouchaud et al. [here](https://arxiv.org/abs/2205.01012). The algorithm performs the comparison of two datasets in terms of their empirical covariance matrices using the Random Matrix Theory. In order to implement the algorithm, we have added the Denman-Bevaers and power series algorithm to calculate the square-root of the matrix along with several utility functions. Further, ```.quantQ.stats``` has been extended by generalised binomial number calculator.
 
+### Maximum Entropy Block Bootstrap
 
+We have added he library ```.quantQ.meb```. The library implements the block bootstrap using the Maximum Entropy as proposed in Bergamelli, Novotny and Urga, 2015 [here](https://econpapers.repec.org/article/risactuec/0115.htm). The method is intended to be used to create a bootstrapped samples for non-stationary time series, where the temporal component is preserved by the blocks with the overall time series being replicated by using the Maximum Entropy bootstrap. For completeness, we provide an old implementation by Vinod and Lopez for reference. 
 
