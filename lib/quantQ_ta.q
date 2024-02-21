@@ -214,8 +214,7 @@
     params:(enlist[`memory]!enlist[20]),params; 
     // temp function
     f:{max[(x;y;z)]};
-    :![tab;();0b;enlist[`$ string[inp[3]],"ATR",string[params[`memory]]]!
-enlist[(mavg;params[`memory];(f;(-;inp[1];inp[2]);(abs;(-;inp[1];inp[3]));(abs;(-;inp[2];inp[3]))))]];
+    :![tab;();0b;enlist[`$ string[inp[3]],"ATR",string[params[`memory]]]!enlist[(mavg;params[`memory];(f;(-;inp[1];inp[2]);(abs;(-;inp[1];inp[3]));(abs;(-;inp[2];inp[3]))))]];
  };
  
  
