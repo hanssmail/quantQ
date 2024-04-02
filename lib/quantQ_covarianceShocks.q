@@ -51,7 +51,7 @@
     // overlap array
     overlapArray: sums z*z:firstFleetingMode mmu flip Omat;
     // output
-    :eigenvalues`lambdaMax`lambdaMaxNCor`overlap`inSampleVecs`fleetingVecs)!(eigensystem[`eigenvalues];thresholds[`lamMax];thresholds[`blur];overlapArray;Omat;fleetingModes);
+    :(`eigenvalues`lambdaMax`lambdaMaxNCor`overlap`inSampleVecs`fleetingVecs)!(eigensystem[`eigenvalues];thresholds[`lamMax];thresholds[`blur];overlapArray;Omat;fleetingModes);
  };
 
 // wrapper to compare empirical cov matrix step by step
