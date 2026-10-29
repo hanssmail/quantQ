@@ -127,7 +127,7 @@ We have added he library ```.quantQ.meb```. The library implements the block boo
 
 ## Changes in v2.0
 
-In v2.0 more 854 unit tests were added. Every change below fixes a defect found by `tests/` (854 tests). Run `q tests/runAll.q` to confirm.
+In v2.0 854 unit tests were added. Every change below fixes a defect found by `tests/` (854 tests). Run `q tests/runAll.q` to confirm.
 
 ### Crashes: undefined names, wrong namespaces, closures
 
