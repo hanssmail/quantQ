@@ -189,7 +189,7 @@
                 ];
                 // return the updated edgeTilde
                 :edgeTilde;
-            }[arrayEdges;] peach  bucket[`loopsTilde];
+            }[bucket[`arrayEdges];] peach  bucket[`loopsTilde];
             // move loops into final; edgeTilde: first bucket[`loopsTilde]
             indLoop: where {first[x]=last[x]} each bucket[`loopsTilde];
             bucket[`loopsFinal]:bucket[`loopsFinal],bucket[`loopsTilde][indLoop];
@@ -246,7 +246,7 @@
                 ];
                 // return the updated edgeTilde
                 :edgeTilde;
-            }[arrayEdges;] peach  bucket[`loopsTilde];
+            }[bucket[`arrayEdges];] peach  bucket[`loopsTilde];
             // end of iteration -- check for paths with triangle
             bucket[`loopsTilde]:{x[`allLoops]}({[bucket]
                 // get the first triangle
@@ -352,7 +352,7 @@
     // thrList -- list of distance thresholds
     // get all pure loops
     allLoops: raze {[tE;thr]
-     {[x;y] ([] threshold:count[y]#x; loop: y ) }[thr;] .quantQ.tda.getAllPureLoops[tabEdges;thr] 
+     {[x;y] ([] threshold:count[y]#x; loop: y ) }[thr;] .quantQ.tda.getAllPureLoops[tE;thr] 
     }[tabEdges] each thrList;
     // analyse allLoops
     :update isBornBefore: born<=min[thrList], isDeathAfter:death>=max[thrList] from select born: min threshold, death: max threshold, sizeLoop: neg[1]+count first loop by loop from allLoops;

@@ -74,6 +74,8 @@ statsW:.qt.fixture["statsW";{.quantQ.stats.wilcoxonTest[11 22 33 40f;10 20 30 44
 .qt.approx["kruskallGamma ignores ties";{.quantQ.stats.kruskallGamma[1 2 2 3 4;1 3 2 3 5]};1f;1e-12];
 .qt.approx["kruskallGamma without ties equals Kendall's tau";{.quantQ.stats.kruskallGamma[1 2 3 4 5;3 1 2 5 4]};0.4;1e-12];
 .qt.true["tKruskall has the sign of gamma";{(signum .quantQ.stats.tKruskall[1 2 3 4 5;3 1 2 5 4])=1}];
+.qt.approx["pairStats counts concordant/discordant/tied pairs once each";{.quantQ.stats.pairStats[.quantQ.stats.concordanceRoutine;1 2 3 4 5;3 1 2 5 4]};7 3 0;0f];
+.qt.approx["pairStats with a repeated observation";{.quantQ.stats.pairStats[.quantQ.stats.concordanceRoutine;1 1 2;1 1 2]};2 0 1;0f];
 
 / multiple testing
 .qt.approx["pBonferroni";{.quantQ.stats.pBonferroni[0.05;5]};0.01;1e-12];

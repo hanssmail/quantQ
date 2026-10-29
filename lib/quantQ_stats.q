@@ -101,9 +101,9 @@
 
 .quantQ.stats.pValueTwoSided:{[x]
     // x -- value of test statistics following N(0,1)
-    // return corresponding p-value
+    // return corresponding p-value (symmetric in x)
     :2*(reverse first flip .quantQ.stats.normTable) neg[1]+
-        (reverse last flip .quantQ.stats.normTable) binr x;
+        (reverse last flip .quantQ.stats.normTable) binr abs x;
  };
 
 .quantQ.stats.pValueLeftSided:{[x]
@@ -131,14 +131,14 @@
 .quantQ.stats.tTestOneSample:{[x1;mean]
     // x1 -- array to be tested
     // mean -- mean
-    // return t-statistics
-    :(avg[x1]-mean)%(dev[x1]% sqrt count x1);
+    // return t-statistics (sample standard deviation)
+    :(avg[x1]-mean)%(sdev[x1]% sqrt count x1);
  };
 
 .quantQ.stats.tTestTwoSample:{[x1;x2]
     // x1,x2 -- two arrays to be tested, unequal length
-    // return Welch's statistics
-    :(avg[x1]-avg[x2])%sqrt ((s*s:dev[x1])%count[x1])+(z*z:dev[x2])%count[x2];
+    // return Welch's statistics (sample standard deviations)
+    :(avg[x1]-avg[x2])%sqrt ((s*s:sdev[x1])%count[x1])+(z*z:sdev[x2])%count[x2];
  };
 
 .quantQ.stats.characteristicsBinomial:{[n;N;p]
@@ -202,8 +202,8 @@
     intTab: select from intTab where sign <>0;
     // sort
     intTab: `absDif xasc intTab;
-    // add order of sorted table
-    intTab: update rnk:i from intTab;
+    // add order of sorted table (ranks start at 1)
+    intTab: update rnk:1+i from intTab;
     // assign average rank to ties
     intTab: update avgRnk: avg rnk by absDif from intTab;
     // stat element of the stats
@@ -231,10 +231,18 @@
     :(concordance;discordance;not concordance or discordance);
  };
 
+// sum a pair routine over all pairs i<j of observations (x_i;y_i), (x_j;y_j)
+.quantQ.stats.pairStats:{[f;xS;yS]
+    // f -- pair routine returning a triplet, e.g. .quantQ.stats.concordanceRoutine
+    // xS, yS -- arrays of values
+    t:flip (xS;yS);
+    :sum raze {[f;t;i] f[t i;] each (i+1)_t}[f;t] each til count t;
+ };
+
 .quantQ.stats.kendallTauRank:{[xS;yS]
     // xS, yS -- arrays of values to compare the rank
     // aggregate concordance statistics
-    stats: sum raze {.quantQ.stats.concordanceRoutine/:[y;(1+x?y)_x]}[t] each t: flip(xS;yS);
+    stats: .quantQ.stats.pairStats[.quantQ.stats.concordanceRoutine;xS;yS];
     // return Kendall's Tau Rank
     :(stats[0]-stats[1])%0.5*count[xS]*count[xS]-1;
  };
@@ -274,8 +282,7 @@
     // xS, yS -- arrays of values to calculate D
     // xS -- being binary
     // yS being integer
-    stats: sum raze {.quantQ.stats.concordanceRoutineBinaryXIntegerY/:[y;(1+x?y)_x]}[t]
-        each t:flip (xS;yS);
+    stats: .quantQ.stats.pairStats[.quantQ.stats.concordanceRoutineBinaryXIntegerY;xS;yS];
     // Somers' D
     :("f"$stats[0]-stats[1])%("f"$stats[0]+stats[1]+stats[2]);
  };
@@ -283,7 +290,7 @@
 .quantQ.stats.kruskallGamma:{[xS;yS]
     // xS, yS -- arrays of values to compare the rank
     // aggregate concordance statistics
-    stats: sum raze {.quantQ.stats.concordanceRoutine/:[y;(1+x?y)_x]}[t] each t: flip(xS;yS);
+    stats: .quantQ.stats.pairStats[.quantQ.stats.concordanceRoutine;xS;yS];
     // return gamma Rank coefficient
     :(stats[0]-stats[1])%stats[0]+stats[1];
  };
@@ -293,7 +300,7 @@
     // calculate Kruskall's gamma
     gamma: .quantQ.stats.kruskallGamma[xS;yS];
     // count number of combinations
-    stats: sum raze {.quantQ.stats.concordanceRoutine/:[y;(1+x?y)_x]}[t] each t: flip(xS;yS);
+    stats: .quantQ.stats.pairStats[.quantQ.stats.concordanceRoutine;xS;yS];
     // return t_gamma
     :gamma*sqrt (stats[0]+stats[1])%(count[xS]*count[xS]*1-gamma*gamma);
  };
@@ -316,14 +323,17 @@
     // alpha -- family-wise alpha
     // pArray -- m-dimensional array of p-values
     // return indices of hypothesis which are rejected
-    :exec index from select from (update alphaHolm: alpha%(count[pArray]+1-i) 
+    // step-down: the k-th smallest p (k=1..m) is compared with alpha/(m+1-k), stopping at the first failure
+    :exec index from (update reject: mins pIndividual<=alphaHolm from update alphaHolm: alpha%(count[pArray]-i) 
         from `pIndividual xasc ([] index: 1+til count[pArray]; pIndividual: pArray)) 
-        where pIndividual<=alphaHolm;
+        where reject;
  };
 
 .quantQ.stats.normTable:((0.0005;3.290527);(0.005;2.575829);(0.01;2.326348);(0.495;0.01253347);(0.5;0));
 
-.quant.stats.runs:{[x] 0 x\x}"f"$;
+.quantQ.stats.runs:{[x] 0 x\x}"f"$;
+// kept for backwards compatibility (the original name had a namespace typo)
+.quant.stats.runs:.quantQ.stats.runs;
 
 // generalised Binomial coefficient
 .quantQ.stats.binomialGen:{[alpha;n]

@@ -75,7 +75,7 @@
     // p -- protein 
     // N -- length of substring
     // return all substrings of length N
-    :({[dict] dict[`strings]:dict[`strings],enlist 3#dict[`protein]; dict[`protein]:1_dict[`protein];dict }/)
+    :({[N;dict] dict[`strings]:dict[`strings],enlist N#dict[`protein]; dict[`protein]:1_dict[`protein];dict }[N]/)
         [{[x;N] N<=count x[`protein]}[;N];`strings`protein!(();p)][`strings];
  };
 
@@ -90,8 +90,8 @@
     // p2 -- protein 2
     // N -- length of substring
     // calculate vector of features for both proteins   
-    d1:.quantQ.infth.proteinGetFeatureVector[.quantQ.infth.proteinGetSubstring[p1;3]];
-    d2:.quantQ.infth.proteinGetFeatureVector[.quantQ.infth.proteinGetSubstring[p2;3]];
+    d1:.quantQ.infth.proteinGetFeatureVector[.quantQ.infth.proteinGetSubstring[p1;N]];
+    d2:.quantQ.infth.proteinGetFeatureVector[.quantQ.infth.proteinGetSubstring[p2;N]];
     // return inner product
     :exec (0f^d1)$0f^d2 from ([substring: key d1];value d1) uj ([substring: key d2];value d2);
  };

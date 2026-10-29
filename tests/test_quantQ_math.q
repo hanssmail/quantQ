@@ -27,6 +27,13 @@ if[not `qt in key `; system "l ",{$[count w:where x="/";(last w)#x;"."]}[string 
 .qt.approx["gammaApprox(4) = 3! = 6";{.quantQ.math.gammaApprox[4f;100000]};6f;1e-2];
 .qt.approx["gammaApprox(0.5) = sqrt(pi)";{.quantQ.math.gammaApprox[0.5;100000]};1.7724538509055159;1e-3];
 
+/ Lanczos gamma function (math.gamma)
+.qt.approx["gamma(4) = 6";{.quantQ.math.gamma 4f};6f;1e-12];
+.qt.approx["gamma(0.5) = sqrt(pi)";{.quantQ.math.gamma 0.5};1.7724538509055159;1e-12];
+.qt.approx["gamma(0.3) uses the reflection formula";{.quantQ.math.gamma 0.3};2.991568987687591;1e-12];
+.qt.approx["gamma(7.2)";{.quantQ.math.gamma 7.2};1050.317816662683;1e-9];
+.qt.approx["lower + upper incomplete gamma = gamma";{.quantQ.math.gammaIncompleteLowerApprox[2.3;1f;30]+.quantQ.math.gammaIncompleteUpperApprox[2.3;1f;30]};.quantQ.math.gamma 2.3;1e-12];
+
 / orthogonal polynomials
 .qt.approx["genLaguerrePol n=0";{.quantQ.math.genLaguerrePol[1.2;1.1;0]};1f;1e-12];
 .qt.approx["genLaguerrePol n=1";{.quantQ.math.genLaguerrePol[1.2;1.1;1]};0.9;1e-12];

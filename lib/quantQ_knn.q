@@ -101,7 +101,7 @@
     // beta -- parameter of the algorithm
     // returns error at local point
     :neg 0.5*t*t:(.quantQ.knn.kNNMeanFunction[coordX;coordY;valueY;weights;beta]-
-        .quantQ.knn.kNNMeanFunction[coordX;coordY;valueY;(count weight)#1;beta]);
+        .quantQ.knn.kNNMeanFunction[coordX;coordY;valueY;(count weights)#1;beta]);
  };
 
 .quantQ.knn.aFunc:{[coordX;coordXb;coordXbb;beta;weights]

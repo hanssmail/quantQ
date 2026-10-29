@@ -80,7 +80,7 @@
     bucket[`w]:1_updatedVec;
     // update soft margin objective function
     bucket[`softMargin]: avg .quantQ.svm.softMargin[;;bucket[`b];bucket[`w];bucket[`lambda]]'
-        [exec yVar from data;exec xVar from data];
+        [bucket[`data][`yVar];bucket[`data][`xVar]];
     // ewma of soft margin at two scales
     aSlow: 1%bucket[`sMAlpSlow]*count[bucket[`data]];
     aFast: 1%bucket[`sMAlpFast]*count[bucket[`data]];
@@ -165,9 +165,9 @@
     // fallout
     out:out,enlist[`fallout]!enlist[cDict[`fp]%cDict[`fp]+cDict[`tn]];
     // falseDiscoveryRate
-    out:out,enlist[`falseDiscoveryRate]!enlist[cDict[`tp]%cDict[`fp]+cDict[`tp]];
+    out:out,enlist[`falseDiscoveryRate]!enlist[cDict[`fp]%cDict[`fp]+cDict[`tp]];
     // falseOmissionRate
-    out:out,enlist[`falseOmissionRate]!enlist[cDict[`tn]%cDict[`fn]+cDict[`tn]];
+    out:out,enlist[`falseOmissionRate]!enlist[cDict[`fn]%cDict[`fn]+cDict[`tn]];
     // prevalenceThreshold
     out:out,enlist[`prevalenceThreshold]!enlist[
         (

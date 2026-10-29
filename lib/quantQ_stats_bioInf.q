@@ -81,8 +81,8 @@
     bucket:((`tab`iter`seq1`seq2)!(NWgrid;0;seq1;seq2));
     // iterate NW and find solution
     bucketSolution:(.quantQ.stats.NeedlemanWunschOneStep)/[(1+Nseq1)*(1+Nseq2);bucket];
-    // initiate array of paths
-    directionsList:(enlist (enlist (Nseq1;Nseq2)));
+    // initiate array of paths; points are (row;column) = (position in seq2;position in seq1)
+    directionsList:(enlist (enlist (Nseq2;Nseq1)));
     // get all the paths from the solution
     directionsList:(.quantQ.stats.NeedlemanWunschPathsOneRun[bucketSolution[`tab];])/[directionsList] ;
     // visualise matches                  
@@ -255,7 +255,7 @@
         iSeq2+:1;
     ];
     // return the final distanceMatrix and value for comparison of two sequences
-    :(`distance`distanceMatrix)!(distanceMatrix[iSeq2-1;iSeq1-1];distanceMatrix);
+    :(`distance`distanceMatrix)!(distanceMatrix[Nseq2;Nseq1];distanceMatrix);
  };
 
 // example

@@ -41,9 +41,10 @@
     // q -- order of the MA(q) process to simulate. q is an integer.
     // alpha -- list of parameters of the MA process (alpha1,...,alphaq)
     // eps -- list of random normal numbers
-    :sum flip $[q>1;
-        (,')[(q _eps,q#0);((q-1) _alpha[q-1]*eps,(q-1)#0)],'.quantQ.ts.simMA[q-1;alpha;eps];
-        (,')[(q _eps,0);(q-1) _alpha[q-1]*eps]];
+    // x_t = e_(t+q) + alpha1 e_(t+q-1) + ... + alphaq e_t, with eps padded by q zeros at the end
+    n:count eps;
+    e:("f"$eps),q#0f;
+    :(q _ e)+sum ("f"$q#alpha)*{[e;n;k] n#k _ e}[e;n] each q-1+til q;
  };
 
 .quantQ.ts.simARMA:{[phi;alpha;eps]
@@ -75,7 +76,7 @@
             $[-7h = type lags;
                 .quantQ.ts.innovations[data;lags];
                 $[7h = type lags;
-                    quantQ.ts.innovations[data;first lags];
+                    .quantQ.ts.innovations[data;first lags];
                     '"wrong type of the parameter lags"]
             ];
             $[process=`ARMA;
@@ -207,6 +208,15 @@
     :(inv[(flip x) mmu x] mmu flip x) mmu data[t];
  };
 
+// residuals of an AR(p) model: e_t = x_t - phi1 x_(t-1) - ... - phip x_(t-p), for t = p..n-1
+.quantQ.ts.residualsAR:{[phi;data]
+    // phi -- AR coefficients (phi1;...;phip)
+    // data -- historical data
+    p:count phi;
+    t:p _ til count data;
+    :data[t]-sum phi*data t-/:1+til p;
+ };
+
 .quantQ.ts.matrix:{[t;q;d]
     // t -- index
     // q -- order of the MA(q) process
@@ -257,7 +267,8 @@
     // data --  historical data (list of floating) used to forecast the AR(lags) model
     // period -- number of steps (positive integer) forecasted  
     // lags -- positive integer containing the order of the autoregressive process
-    forecast:((neg lags)#data) mmu .quantQ.ts.DurbinLevinson[data;lags];
+    // phi1 multiplies the most recent observation
+    forecast:(reverse (neg lags)#data) mmu .quantQ.ts.DurbinLevinson[data;lags];
     data:data,forecast;
     $[period=1;
         :forecast;
@@ -265,7 +276,21 @@
     ]
  };
 
-.quantQ.ts.forecastMA:{[data;q]
+.quantQ.ts.forecastMA:{[data;period;q]
+    // data -- historical data (list of floating numbers) used to forecast the MA(q) model
+    // period -- number of steps (positive integer) forecasted
+    // q -- order of the MA process
+    // returns the period-step forecasts: x_(n+h) = m + sum_(j>=h) theta_j e_(n+h-j), and m beyond q
+    m:avg data;
+    x:data-m;
+    theta:.quantQ.ts.innovations[data;q];
+    // recover the innovations recursively: e_t = x_t - sum_j theta_j e_(t-j)
+    e:{[theta;q;e;xt] e,xt-theta wsum reverse (neg q)#(q#0f),e}[theta;q]/[`float$();x];
+    :m+{[theta;q;e;h] $[h>q;0f;((h-1)_theta) wsum (1+q-h)#reverse e]}[theta;q;e] each 1+til period;
+ };
+
+// one-step MA(q) predictors of the original implementation (kept for reference)
+.quantQ.ts.forecastMAOneStep:{[data;q]
     // data --  historical data (list of floating) used to forecast the AR(lags) model
     // q -- degree of MA
     est:(q+2)#0f;
@@ -308,14 +333,9 @@
  };
 
 .quantQ.ts.vec:{[a]
-    // a -- matrix	
-    i:(count raze a);
-    j:1;
-    v:(flip a)[0;];
-    while[j<i;
-        v:v,/(flip a)[j;];
-        j:j+1];
-    :v;
+    // a -- matrix
+    // stack the columns of a into one vector
+    :raze flip a;
  };
 
 .quantQ.ts.zt:{[y;t;p]
@@ -462,11 +482,11 @@
     // y -- historical data (list of floating numbers)
     // p -- order of the VAR(p) process
     mse:1.96*sqrt[.quantQ.ts.diag[.quantQ.ts.forecastMSE[y;p]]];
-    forecast:.quantQ.ts.estimate1[d;2];
+    forecast:.quantQ.ts.estimate1[y;p];
     :flip ((forecast-mse);(forecast+mse));
  };
 
-.quantQ.ts.zt:{[y0;t;p;flag]
+.quantQ.ts.ztX:{[y0;t;p;flag]
     // y0 -- vectorization of y0 
     // t -- time (positive integer)
     // p -- number of lags (positive integer)
@@ -476,11 +496,12 @@
         .quantQ.ts.vec[y0[;(t-1)-til p]]];
  };
 
- .quantQ.ts.Z:{[y;p;flag]
+// (the VARX helpers are named ztX/ZXlag so that they do not overwrite the VAR versions zt/Z/Y above)
+.quantQ.ts.ZXlag:{[y;p;flag]
     // y -- historical data of the endogenous variable (list of floating numbers)
     // p -- order of the VAR(p) process
     // flag -- boolean value deciding whether a leading 1 needs to be set for zt.
-    :flip {[y;i;p;flag].quantQ.ts.zt[y;i;p;flag]}[y;;p;flag] each p + til (count y[0])-p;
+    :flip {[y;i;p;flag].quantQ.ts.ztX[y;i;p;flag]}[y;;p;flag] each p + til (count y[0])-p;
  };
 
 .quantQ.ts.ZX:{[x;y;q;p]
@@ -488,25 +509,23 @@
     // y -- historical data of the endogenous variable (list of floating numbers)
     // q -- order of exogenous process
     // p -- order of the VAR(p) process
-    :.quantQ.ts.Z[y;p;1b],.quantQ.ts.Z[x;q;0b],x[;q+til (count x[0])-q];
+    // note: the lagged blocks only line up when q=p
+    :.quantQ.ts.ZXlag[y;p;1b],.quantQ.ts.ZXlag[x;q;0b],x[;q+til (count x[0])-q];
  };
 
-.quantQ.ts.Y:{[y;p]
-    // y -- historical data of the endogenous variable (list of floating numbers)
-    // p -- order of the VAR(p) process
-    :y[;p+til (count y[;0])+1-p];
- };
-
-.quantQ.varXest:{[x;y;q;p]
+.quantQ.ts.varXest:{[x;y;q;p]
     // x -- historical data of the exogenous variable (list of floating numbers)
     // y -- historical data of the endogenous variable (list of floating numbers)
     // q -- order of the exogenous process
     // p -- order of the VAR(p) process
     z0:.quantQ.ts.ZX[x;y;q;p];
-    :y[;p+til (count y[0])-p] mmu flip z0 mmu inv (flip z0) mmu z0;
+    // OLS: Y Z' (Z Z')^-1
+    :y[;p+til (count y[0])-p] mmu (flip z0) mmu inv z0 mmu flip z0;
  };
+// kept for backwards compatibility (the original was defined outside the .quantQ.ts namespace)
+.quantQ.varXest:.quantQ.ts.varXest;
 
-.quantQ.ts.covarianceResidual:{[x;y;q;p]
+.quantQ.ts.covarianceResidualX:{[x;y;q;p]
     // x -- historical data of the exogenous variable (list of floating numbers)
     // y -- historical data of the endogenous variable (list of floating numbers)
     // q -- order of exogenous process
@@ -528,8 +547,9 @@
     v:M[;0];
     k:count y;
     m:count x;
-    :v+sum[{[i]M[;(1+k*i)+til k] mmu y[;(count y[0])-(1+i)]} each til p]+
-        sum[{[i]M[;1+(k*p)+(m*i)+til m] mmu x[;(count x[0])-(1+i)]} each til q]+
+    // q lambdas cannot see outer locals, so M, x, y, k, m and p are passed in explicitly
+    :v+sum[{[M;y;k;i]M[;(1+k*i)+til k] mmu y[;(count y[0])-(1+i)]}[M;y;k] each til p]+
+        sum[{[M;x;k;m;p;i]M[;1+(k*p)+(m*i)+til m] mmu x[;(count x[0])-(1+i)]}[M;x;k;m;p] each til q]+
         M[;1+(k*p)+(m*q)+til m] mmu x[;0];
  };
 
@@ -540,10 +560,8 @@
     // q -- order of exogenous process
     // p -- order of the VAR(p) process
     output:.quantQ.ts.estimateX[x;y;q;p];
-    :$[n>1;
-    {
-        newx:.quantQ.ts.estimateN[(n-1);q;x];
-        .quantQ.ts.estimateNX[n-1;x,'newx;y,'output;q;p];
-    };
-    output];
+    if[n=1; :output];
+    // forecast the exogenous variables one step ahead with a VAR(q), then recurse
+    newx:.quantQ.ts.estimate1[x;q];
+    :.quantQ.ts.estimateNX[n-1;x,'newx;y,'output;q;p];
  };

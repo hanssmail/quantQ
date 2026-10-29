@@ -56,19 +56,20 @@
     dimH:count hopnet;
     // min energy
     minE: .quantQ.hopf.getMinEnergyHopfield[dimH#1f];
-    // random search for the ground state    
-    groundState: {x[`state]}({[bucket]
-        // random starting point
-        startingPoint:"f"$count[bucket[`hopnet]]#(-1 1f);
+    // random search for the ground state (q lambdas cannot see outer locals, so minE is passed in)
+    groundState: {x[`state]}({[minE;bucket]
+        // random starting point of +-1
+        startingPoint:-1 1f (count bucket[`hopnet])?2;
         // transform
         stateNew: .quantQ.hopf.oneHopfieldJump[bucket[`hopnet];startingPoint];
-        // compare energy
-        if[.quantQ.ephys.getMinEnergyHopfield[dimH#1f]=.quantQ.hopf.getEnergyHopfield[bucket[`hopnet];stateNew];
+        // compare energy; give up after maxIter random starts
+        bucket[`cnt]:bucket[`cnt]+1;
+        if[(minE=.quantQ.hopf.getEnergyHopfield[bucket[`hopnet];stateNew]) or bucket[`cnt]>=bucket[`maxIter];
             bucket[`continue]:0b;
         ];
         // return updated bucket
-        :(`hopnet`state`continue)!(bucket[`hopnet];stateNew;bucket[`continue]);
-        }/)[{x[`continue]};(`hopnet`state`continue)!(hopnet;dimH#1f;1b)];
+        :(`hopnet`state`continue`cnt`maxIter)!(bucket[`hopnet];stateNew;bucket[`continue];bucket[`cnt];bucket[`maxIter]);
+        }[minE]/)[{x[`continue]};(`hopnet`state`continue`cnt`maxIter)!(hopnet;dimH#1f;1b;0;10000)];
     // return ground state 
     : groundState;
  };   
@@ -79,7 +80,7 @@
     // state1,state2 -- array of +-1 
     out: state1 *\: state2;
     // remove diagonal term
-    :out*"f"$not v=/:v:til count state;
+    :out*"f"$not v=/:v:til count state1;
  };
 
 // exa: state:(1 -1 1 1f); state3:(1 -1 1 -1f);
@@ -102,7 +103,8 @@
     // stateTarget -- array of +-1      
     // params -- dictionary with params, default is params:()!()
     // initiate the network 
-    hopnetInit:.quantQ.hopf.getHopfieldNet2S[stateInput;stateTarget];      
+    // W mmu input should give target, so W = target *\: input
+    hopnetInit:.quantQ.hopf.getHopfieldNet2S[stateTarget;stateInput];      
     // initiate the bias
     biasInit: count[stateInput]#0.0;
     // default learning rate, stopping rule (L2 by default)
@@ -114,8 +116,8 @@
         stateImplied: .quantQ.hopf.oneHopfieldJumpBias[bucket[`hopnet];bucket[`stateInput];bucket[`bias]];
         // correction for the Hopfield net
         deltaW:params[`learningRate]*
-        .quantQ.hopf.getHopfieldNet2S[bucket[`stateInput];bucket[`stateTarget]]-
-        .quantQ.hopf.getHopfieldNet2S[bucket[`stateInput];stateImplied];
+        .quantQ.hopf.getHopfieldNet2S[bucket[`stateTarget];bucket[`stateInput]]-
+        .quantQ.hopf.getHopfieldNet2S[stateImplied;bucket[`stateInput]];
         // correction for the bias 
         deltaB:params[`learningRate]*
         bucket[`stateTarget]-stateImplied;
@@ -147,7 +149,8 @@
     // bias -- array with fixed bias
     // params -- dictionary with params, default is params:()!()
     // initiate the network 
-    hopnetInit:.quantQ.hopf.getHopfieldNet2S[stateInput;stateTarget];      
+    // W mmu input should give target, so W = target *\: input
+    hopnetInit:.quantQ.hopf.getHopfieldNet2S[stateTarget;stateInput];      
     // default learning rate, stopping rule (L2 by default)
     params:(`learningRate`relError`maxIter!(0.1;0.01;100)),params;
     // Hebbian descent iteration
@@ -157,8 +160,8 @@
         stateImplied: .quantQ.hopf.oneHopfieldJumpBias[bucket[`hopnet];bucket[`stateInput];bucket[`bias]];
         // correction for the Hopfield net
         deltaW:params[`learningRate]*
-        .quantQ.hopf.getHopfieldNet2S[bucket[`stateInput];bucket[`stateTarget]]-
-        .quantQ.hopf.getHopfieldNet2S[bucket[`stateInput];stateImplied];
+        .quantQ.hopf.getHopfieldNet2S[bucket[`stateTarget];bucket[`stateInput]]-
+        .quantQ.hopf.getHopfieldNet2S[stateImplied;bucket[`stateInput]];
         // update the Hopfield net
         bucket[`hopnet]:bucket[`hopnet]+deltaW;
         // update counter

@@ -23,7 +23,8 @@
     // adjusted Total Sum of Squares
     adjTSS:(1.0%(count[y]-1))*sum t*t:y-avg[y];
     // adjusted Sum Square of Residuals
-    adjRSS: (1.0%(count[y]-1-p))*sum t*t:y-yHat;
+    // note: q evaluates right to left, so n-p-1 has to be written n-(p+1)
+    adjRSS: (1.0%(count[y]-(p+1)))*sum t*t:y-yHat;
     // adjusted R squared
     :(adjTSS-adjRSS)%adjTSS;
  };
@@ -44,7 +45,7 @@
     // n -- number of parameters
     // sample -- sample size
     // logL -- log-likelihood
-    :.quantQ.ols.AIC[n;logL]+("f"$2*(n*n)+n)%("f"$sample-1-n);
+    :.quantQ.ols.AIC[n;logL]+("f"$2*(n*n)+n)%("f"$sample-(n+1));
  };
 
 .quantQ.ols.fit:{[y;x]
@@ -75,7 +76,7 @@
         // R-squared
         Rsquared:1.0-RSS%TSS;
         // adjusted R-squared
-        adjRsquared:1-(1-Rsquared)*(count[y]-1.0)%(count[y]-(count[beta]-1)-1.0);
+        adjRsquared:1-(1-Rsquared)*(count[y]-1.0)%(count[y]-count[beta]);
         // significance level in normal approximation (econometric)
         convertPDict:((0j;1j;2j;3j;4j)!("-";"* (90% c.l.)";"** (95% c.l.)";"*** (99% c.l.)";
             "**** (99.9% c.l.)"));
@@ -86,7 +87,7 @@
         // AIC from log-likelihood
         aic:(2.0*count[beta])-2.0*logL;
         // AIC with small sample correction - depends upon heavy assumptions
-        aicc:aic+("f"$2*(k*k)+k)%("f"$count[y]-1-k:count[beta]);
+        aicc:aic+("f"$2*(k*k)+k)%("f"$count[y]-(1+k:count[beta]));
     // output bucket
     bucket:(`beta`errors`varcov`nObservations`dfn`tStats`TSS`RSS`Rsquared`adjRsquared`signLevels`logL`aic`aicc!
            (beta;errors;varcov;count[y];count[beta];tStats;TSS;RSS;Rsquared;adjRsquared;signLevels;logL;aic;aicc));
@@ -104,7 +105,7 @@
     tabReg:([] name:xNames; coeff:reg[`beta];error:reg[`errors];tStat:reg[`tStats];
         significance:reg[`signLevels]);
     // stats part of table
-    tabStats:([] name:`STATISTICS`nObservations`nParameters`TSS`RSS`Rsquared`RsquaredAdjusted`logLikelihood`AIC`AICC; coeff:(0nf;"f"$count[y];"f"$reg[`dfn];
+    tabStats:([] name:`STATISTICS`nObservations`nParameters`TSS`RSS`Rsquared`RsquaredAdjusted`logLikelihood`AIC`AICC; coeff:(0nf;"f"$reg[`nObservations];"f"$reg[`dfn];
         "f"$reg[`TSS];"f"$reg[`RSS];reg[`Rsquared];reg[`adjRsquared];reg[`logL];reg[`aic];reg[`aicc]));
     // return the table with results
     :tabReg uj tabStats;
@@ -127,7 +128,7 @@
 
 .quantQ.ols.RMSE:{[tabModel]
     // tabModel -- table where first column is true dependent variable and second is the estimated one
-    :sqrt t wavg t:tabModel[cols[tabModel][0]]-tabModel[cols[tabModel][1]];
+    :sqrt avg t*t:tabModel[cols[tabModel][0]]-tabModel[cols[tabModel][1]];
  };
 
 .quantQ.ols.inOut:{[y;x;inOutFlag]
@@ -192,8 +193,10 @@
     tabR2: `byR2 xasc select byR2: .quantQ.ols.rSquared[y;yPred] by groupBy from tab;
     // sorted groupBy indices
     groupBySorted: exec groupBy from tabR2;
+    // R2 over the whole sample
+    totR2: .quantQ.ols.rSquared[tab`y;tab`yPred];
     // output table with cumulative R2 
-    :update r2: .quantQ.ols.rSquared[y;yPred] by 1 from tabR2 lj 1!{([] groupBy:x;byR2Cumul:y)}[groupBySorted;] 
+    :update r2: totR2 from tabR2 lj 1!{([] groupBy:x;byR2Cumul:y)}[groupBySorted;] 
     {[tab;gBy] first exec r2 from select r2:.quantQ.ols.rSquared[y;yPred] by 1 from tab where groupBy in gBy  }[tab;] 
     each {y _ x}[groupBySorted;] each til count groupBySorted;
  };

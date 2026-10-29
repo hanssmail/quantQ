@@ -27,8 +27,8 @@
     xTS:{[arr;n] arr[n]+(first 1?1.0)*(arr[n+1]-arr[n])    }[zT;] each rT;
     // order index
     ixTS: iasc xTS;
-    // re-order xTS based on xT
-    xTNew:asc[xTS]@ixT;
+    // re-order xTS based on xT: the k-th smallest draw goes where the k-th smallest observation was
+    xTNew:asc[xTS]@iasc ixT;
     // return BS array
     :xTNew;
  };
@@ -77,8 +77,8 @@
         }[bucket;zT;] each rT;
     // order index
     ixTS: iasc xTS;
-    // re-order xTS based on xT
-    xTNew:asc[xTS]@ixT;
+    // re-order xTS based on xT: the k-th smallest draw goes where the k-th smallest observation was
+    xTNew:asc[xTS]@iasc ixT;
     // return BS array
     :xTNew;
  };
@@ -91,11 +91,11 @@
     // data -- array of data to shuffle
     bucket:(enlist[`block]!enlist[6]),bucket;
     // decide number of blocks
-    nBlock:ceiling count[xT]%bucket[`block];
+    nBlock:ceiling count[data]%bucket[`block];
     // starting points
     nStartingPoints:nBlock?1+count[data]-bucket[`block];
-    // blocks
-    nBlocks:flip nStartingPoints +\(bucket[`block]#1);
+    // blocks: indices s, s+1, ..., s+block-1 for each starting point s
+    nBlocks:nStartingPoints +\: til bucket[`block];
     // return bootstrap
     :count[data]#raze data @ nBlocks;
  };
@@ -111,8 +111,8 @@
     nBlock:ceiling count[data]%bucket[`block];
     // starting points
     nStartingPoints:nBlock?1+count[data]-bucket[`block];
-    // blocks
-    nBlocks:flip nStartingPoints +\(bucket[`block]#1);
+    // blocks: indices s, s+1, ..., s+block-1 for each starting point s
+    nBlocks:nStartingPoints +\: til bucket[`block];
     // last of first block and the first of the second block
     sewingIndices: flip ((last each nBlocks);next[first each nBlocks]);
     // add noise
@@ -137,8 +137,8 @@
     nBlock:ceiling count[data]%bucket[`block];
     // starting points
     nStartingPoints:nBlock?1+count[data]-bucket[`block];
-    // blocks
-    nBlocks:flip nStartingPoints +\(bucket[`block]#1);
+    // blocks: indices s, s+1, ..., s+block-1 for each starting point s
+    nBlocks:nStartingPoints +\: til bucket[`block];
     // last of first block and the first of the second block
     sewingIndices: flip ((last each nBlocks);next[first each nBlocks]);
     // add noise

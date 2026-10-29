@@ -46,9 +46,10 @@
     // log-Likelihood excluding term not depending on theta 
     logL:neg exec sum (yVar*sum[theta*flip xVar])-exp[sum[theta*flip xVar]] from tab;        
     // add regularisation term -- do not regularise constant
+    // the objective is minimised, so the penalty is added
     $[bucket[`addConstant]=1b;
-        logL: logL - count[tab]*lambda*wsum[1_theta;1_theta];
-        logL: logL - count[tab]*lambda*wsum[theta;theta]
+        logL: logL + count[tab]*lambda*wsum[1_theta;1_theta];
+        logL: logL + count[tab]*lambda*wsum[theta;theta]
     ];
     // regularised logLikelihood     
     :logL;
@@ -65,10 +66,10 @@
     bucket:((`precision`initPoint)!(0.0001;{[x;y] neg[1]+x?2.0}[xDim;] each til 1+xDim)),bucket;
     // define function to minimise (maximum likelihood)
     sol:.quantQ.opt.amoeba[bucket[`precision]; bucket[`initPoint];.quantQ.pois.logLPoissonNeg[tab;]]; 
-    // add extected intensity and sorted list of expected events
-    tab:update nExpected: enlist each {[x] exec n from `prob xdesc .quantQ.pois.poissonPDFTab[x;()!()]} each intensity 
-        from update intensity: sum sol[`pmin]*flip xVar from tab;
-    logLikelihood: sum exec (yVar*intensity)-exp[intensity] from tab;
+    // intensity lambda = exp(theta'x); counts sorted by probability (the first one is the mode)
+    tab:update nExpected: {[x] exec n from `prob xdesc .quantQ.pois.poissonPDFTab[x;()!()]} each intensity 
+        from update intensity: exp sum sol[`pmin]*flip xVar from tab;
+    logLikelihood: sum exec (yVar*log intensity)-intensity from tab;
     // return
     :(`theta`logLikelihood`output)!(sol[`pmin];logLikelihood;select yVar, xVar, intensity, yVarPRED: first each nExpected, yVarLIST: nExpected from tab);    
  };
@@ -79,8 +80,8 @@
     // tab -- yVar, xVar columns
     // model -- dictionary with the solution of the model
     // evaluate model on the provided data
-    out: update logL: sum  (yVar*intensity)-exp[intensity],yVarPRED: yVarLIST[;0] from update yVarLIST: {[x] exec n from `prob xdesc .quantQ.pois.poissonPDFTab[x;()!()]} each intensity 
-        from update intensity: sum model[`theta]*flip xVar from select yVar, xVar from tab;
+    out: update logL: sum (yVar*log intensity)-intensity,yVarPRED: yVarLIST[;0] from update yVarLIST: {[x] exec n from `prob xdesc .quantQ.pois.poissonPDFTab[x;()!()]} each intensity 
+        from update intensity: exp sum model[`theta]*flip xVar from select yVar, xVar from tab;
     // adding correlation    
     out: update corr: cor[yVar;yVarPRED] from out;   
     // return the full table    
@@ -104,10 +105,10 @@
     ];
     // define function to minimise (maximum likelihood)
     sol:.quantQ.opt.amoeba[bucket[`precision]; bucket[`initPoint];.quantQ.pois.logLPoissonNegReg[tab;lambda;bucket;]]; 
-    // add extected intensity and sorted list of expected events
-    tab:update nExpected: enlist each {[x] exec n from `prob xdesc .quantQ.pois.poissonPDFTab[x;()!()]} each intensity 
-        from update intensity: sum sol[`pmin]*flip xVar from tab;
-    logLikelihood: sum exec (yVar*intensity)-exp[intensity] from tab;
+    // intensity lambda = exp(theta'x); counts sorted by probability (the first one is the mode)
+    tab:update nExpected: {[x] exec n from `prob xdesc .quantQ.pois.poissonPDFTab[x;()!()]} each intensity 
+        from update intensity: exp sum sol[`pmin]*flip xVar from tab;
+    logLikelihood: sum exec (yVar*log intensity)-intensity from tab;
     // return
     :(`theta`logLikelihood`output`lambda`addConstant)!(sol[`pmin];logLikelihood;
         select yVar, xVar, intensity, yVarPRED: first each nExpected, yVarLIST: nExpected from tab;lambda;bucket[`addConstant]);    
@@ -121,8 +122,8 @@
         tab:update xVar: (unit,'xVar) from update unit:1.0 from tab;    
     ];
     // evaluate model on the provided data
-    out: update logL: sum  (yVar*intensity)-exp[intensity],yVarPRED: yVarLIST[;0] from update yVarLIST: {[x] exec n from `prob xdesc .quantQ.pois.poissonPDFTab[x;()!()]} each intensity 
-        from update intensity: sum model[`theta]*flip xVar from select yVar, xVar from tab;
+    out: update logL: sum (yVar*log intensity)-intensity,yVarPRED: yVarLIST[;0] from update yVarLIST: {[x] exec n from `prob xdesc .quantQ.pois.poissonPDFTab[x;()!()]} each intensity 
+        from update intensity: exp sum model[`theta]*flip xVar from select yVar, xVar from tab;
     // adding correlation    
     out: update corr: cor[yVar;yVarPRED] from out;   
     // return the full table    

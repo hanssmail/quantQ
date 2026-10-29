@@ -159,6 +159,8 @@
     // func -- output layer function
     layers:params[`parsLayers];
     cntL:count layers;
+    // nodes of every layer
+    nodesT1:(cntL)#enlist[()];
     // update input layer
     nodesT1[0]:1.0,/:.quantQ.nn.sigmoid[(1.0,/:inputData) mmu params[`parsLayers][0]];
     // update layer by layer deep in the network if present

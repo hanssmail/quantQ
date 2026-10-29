@@ -76,21 +76,30 @@
   delta[0;i]:pi[i]*b[i;obs[0]];
   i:i+1;
   ];
+ / back-pointers: psi[t;j] is the best previous state when in state j at time t
+ psi:(T;N)#0;
  / 2. recursion
  t:1;
  while[t<T;
   j:0;
   while[j<N;
-   delta[t;j]:(max delta[t-1;]*a[;j])*b[j;obs[t]];
+   v:delta[t-1;]*a[;j];
+   delta[t;j]:(max v)*b[j;obs[t]];
+   psi[t;j]:v?max v;
    j:j+1;
    ];
   t:t+1;
   ];
  / 3. termination
  pstar:max last delta;
- qtstar:{[t;delta]
-  d:max@/:delta;
-  delta[t;]?d[t]}[;delta] each til T;
+ / 4. backtracking
+ qtstar:T#0;
+ qtstar[T-1]:(last delta)?pstar;
+ t:T-2;
+ while[t>=0;
+  qtstar[t]:psi[t+1;qtstar[t+1]];
+  t:t-1;
+  ];
  (pstar;qtstar)}
 
 / randomly select a state according to the weights.

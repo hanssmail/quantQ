@@ -223,9 +223,13 @@
  };
 
 .quantQ.mcts.evaluateMCTS:{[tab]
-    // tab -- table with `treeMCTS
-    // decide who is on move -- it affects perspective
-    isOnMove:1+mod[count bucket[`movesState];2];
+    // tab -- table with `treeMCTS, or the MCTS bucket itself (with `treeMCTS and `movesState)
+    // decide who is on move -- it affects perspective; a bare tree is evaluated for player 1
+    isOnMove:1;
+    if[99h=type tab;
+        isOnMove:1+mod[count tab[`movesState];2];
+        tab:tab[`treeMCTS]
+    ];
     // convert isWinner to numerical value
     tab: update w: ?[(isWinner=1) and isWinner<3;1;?[(not isWinner=1) and isWinner<3;0;0.5] ] from tab;
     // evaluate each possible first move -- take the one with best average value

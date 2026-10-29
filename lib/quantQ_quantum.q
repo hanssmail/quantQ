@@ -26,11 +26,13 @@
 .quantQ.quantum.U2:{[params]
     // params -- dictionary with parameters
     params:((`phi`lambda)!(0.5*.quantQ.complex.pi;0.5*.quantQ.complex.pi)),params;
-    a12:.quantQ.complex.polar2Canonical[(`radius`angle)!(neg 1.0;params[`lambda])];
-    a21:.quantQ.complex.polar2Canonical[(`radius`angle)!(1.0;params[`phi])];
-    a22:.quantQ.complex.polar2Canonical[(`radius`angle)!(1.0;params[`lambda]+params[`phi])];
+    // U2(phi,lambda) = 1/sqrt(2) [[1, -exp(i lambda)], [exp(i phi), exp(i (phi+lambda))]]
+    r:1.0%sqrt 2.0;
+    a12:.quantQ.complex.polar2Canonical[(`radius`angle)!(neg r;params[`lambda])];
+    a21:.quantQ.complex.polar2Canonical[(`radius`angle)!(r;params[`phi])];
+    a22:.quantQ.complex.polar2Canonical[(`radius`angle)!(r;params[`lambda]+params[`phi])];
     // output
-    :(((`re`im)!(1.0;0.0);a12);(a21;a22));
+    :(((`re`im)!(r;0.0);a12);(a21;a22));
  };
 
 // U1 gate
@@ -38,8 +40,8 @@
     // params -- dictionary with parameters
     params:(enlist[`lambda]!enlist[0.5*.quantQ.complex.pi]),params;
     a22:.quantQ.complex.polar2Canonical[(`radius`angle)!(1.0;params[`lambda])];
-    // output
-    :(((`re`im)!(1.0;0.0);(`re`im)!(0.0;0.0));((`re`im)!(1.0;0.0);a22));
+    // output: diag(1, exp(i lambda))
+    :(((`re`im)!(1.0;0.0);(`re`im)!(0.0;0.0));((`re`im)!(0.0;0.0);a22));
  };
 
 // Hadamard gate
@@ -77,8 +79,8 @@
 .quantQ.quantum.Rz:{[params]
     // params -- dictionary with parameters
     params:(enlist[`theta]!enlist[0.5*.quantQ.complex.pi]),params;
-    a11:.quantQ.complex.polar2Canonical[(`radius`angle)!(1.0;neg 0.5*params[`phi])];
-    a22:.quantQ.complex.polar2Canonical[(`radius`angle)!(1.0;0.5*params[`phi])];
+    a11:.quantQ.complex.polar2Canonical[(`radius`angle)!(1.0;neg 0.5*params[`theta])];
+    a22:.quantQ.complex.polar2Canonical[(`radius`angle)!(1.0;0.5*params[`theta])];
     // output
     :((a11;(`re`im)!(0.0;0.0));((`re`im)!(0.0;0.0);a22));
  };

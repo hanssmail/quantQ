@@ -37,6 +37,8 @@ tsEps:1 0.5 -0.3 0.2 0 0.4;
 .qt.approx["estimate accepts the MA order as a one-element list";{.quantQ.ts.estimate[tsD;`MA;enlist 1]};enlist 0.6781576819514514;1e-10];
 .qt.eq["HannanRissanen returns p+q coefficients";{count .quantQ.ts.HannanRissanen[tsD;1;1]};2];
 .qt.throws["estimate rejects an unknown process";{.quantQ.ts.estimate[tsD;`GARCH;1]}];
+.qt.approx["residualsAR";{.quantQ.ts.residualsAR[enlist 0.5;1 2 3f]};1.5 2;1e-12];
+.qt.approx["residualsAR, AR(2)";{.quantQ.ts.residualsAR[0.5 0.2;1 2 3 4f]};(3-1+0.2;4-1.5+0.4);1e-12];
 
 / forecasting
 .qt.approx["forecastAR, p=1, three steps (re-estimated after each step)";{.quantQ.ts.forecastAR[tsD;3;1]};0.1825023456311589 0.13471177985059515 0.0994418428898235;1e-10];
@@ -44,6 +46,8 @@ tsEps:1 0.5 -0.3 0.2 0 0.4;
 .qt.approx["forecast dispatches AR";{.quantQ.ts.forecast[tsD;3;`AR;1]};0.1825023456311589 0.13471177985059515 0.0994418428898235;1e-10];
 .qt.throws["forecast rejects a non-positive horizon";{.quantQ.ts.forecast[tsD;0;`AR;1]}];
 .qt.true["forecast dispatches MA";{9h=type .quantQ.ts.forecast[tsD;1;`MA;1]}];
+.qt.eq["forecast MA returns one value per step";{count .quantQ.ts.forecast[tsD;3;`MA;1]};3];
+.qt.approx["forecast MA beyond the order is the sample mean";{last .quantQ.ts.forecast[tsD;3;`MA;1]};avg tsD;1e-12];
 
 / matrix helpers
 .qt.eq["vec stacks the columns";{.quantQ.ts.vec (1 2;3 4)};1 3 2 4];

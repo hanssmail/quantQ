@@ -68,7 +68,7 @@
     // tab -- table
     params:(enlist[`memory]!enlist[10]),params;
     :![tab; (); 0b; 
-    enlist[`$ string[inp],"MSD",string[params[`memory]]]!enlist[(sqrt;(mdev;params[`memory];inp))]];
+    enlist[`$ string[inp],"MSD",string[params[`memory]]]!enlist[(mdev;params[`memory];inp)]];
  };
 
 // the Bollinger Bands

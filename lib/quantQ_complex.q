@@ -1,4 +1,5 @@
 .quantQ.pi: acos -1;
+.quantQ.complex.pi: acos -1;
 
 .quantQ.complex.norm:{[x]
     // x -- quaternion

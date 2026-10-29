@@ -208,7 +208,7 @@
     // default output value
     det:0.0;
     // dim=1
-    $[dimM=1;det:mat; ];
+    $[dimM=1;det:mat[0;0]; ];
     // dim=2
     $[dimM=2;det:(mat[0;0]*mat[1;1])-(mat[0;1]*mat[1;0]); ];
     // dim=3, Sarrus rule

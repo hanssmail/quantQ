@@ -62,28 +62,48 @@
 // Special functions -- real domain
 /////////////////////////////////////////////
 .quantQ.math.gammaApprox:{[x;n]
-    // Euler expansion
-    :prd {[x;n] xexp[(1.0+1.0%n);x]%(1.0+x%n) }[x;] 1+til n;               
+    // Euler expansion: Gamma(x) = (1/x) prod_k (1+1/k)^x / (1+x/k); converges like 1/n
+    :(1.0%x)*prd {[x;n] xexp[(1.0+1.0%n);x]%(1.0+x%n) }[x;] 1+til n;               
  }; 
+
+// Lanczos approximation of the gamma function (g=7, 9 coefficients), accurate to ~1e-15
+.quantQ.math.lanczosCoef:0.99999999999980993 676.5203681218851 -1259.1392167224028 771.32342877765313 -176.61502916214059 12.507343278686905 -0.13857109526572012 9.9843695780195716e-6 1.5056327351493116e-7;
+
+.quantQ.math.gamma:{[x]
+    // x -- real argument (not a non-positive integer)
+    // reflection formula for x < 1/2
+    if[x<0.5; :.quantQ.math.pi%(sin .quantQ.math.pi*x)*.z.s 1-x];
+    x:x-1;
+    a:first[.quantQ.math.lanczosCoef]+sum (1_.quantQ.math.lanczosCoef)%x+1+til 8;
+    t:x+7.5;
+    :(sqrt 2*.quantQ.math.pi)*(xexp[t;x+0.5])*(exp neg t)*a;
+ };
  
 .quantQ.math.genLaguerrePol:{[x;alpha;n] 
     // generalised Laguerre polynomials 
     // example: .quantQ.math.genLaguerrePol[1.2;1.1;2]
+    // recurrence: k L_k = (2k-1+alpha-x) L_(k-1) - (k-1+alpha) L_(k-2)
     if[n=0;:1.0];
     if[n=1;:1.0+alpha-x];
-    if[n>1;:((((2*n)+1.0+alpha-x)*.z.s[x;alpha;n-1])-(n+alpha)*.z.s[x;alpha;n-2])%n+1];
- };
- 
-.quantQ.math.gammaIncompleteUpperApprox:{[z;x;n]
-     // expansion using generalised Laguerre polynomials
-     // example: .quantQ.math.gammaIncompleteUpperApprox[2.3;1.0;12]
-     :xexp[x;z]*exp[neg x]*sum {[z;x;n] .quantQ.math.genLaguerrePol[x;z;n]%(n+1.0)}[z;x;] each til n;
+    l:(1.0;1.0+alpha-x);
+    k:2;
+    while[k<=n;
+        l:(l 1;((((((2*k)-1)+alpha)-x)*l 1)-((k-1)+alpha)*l 0)%k);
+        k+:1
+    ];
+    :l 1;
  };
  
 .quantQ.math.gammaIncompleteLowerApprox:{[z;x;n]
-     // expansion using generalised Laguerre polynomials
+     // lower incomplete gamma by its power series (converges for every x>=0), n terms
      // example: .quantQ.math.gammaIncompleteLowerApprox[2.3;1.0;12]
-     :.quantQ.math.gammaApprox[z;n]-.quantQ.math.gammaIncompleteUpperApprox[z;x;n];
+     :xexp[x;z]*exp[neg x]*(1.0%z)*sum prds 1.0,x%z+1+til n-1;
+ };
+
+.quantQ.math.gammaIncompleteUpperApprox:{[z;x;n]
+     // upper incomplete gamma = Gamma(z) - lower incomplete gamma
+     // example: .quantQ.math.gammaIncompleteUpperApprox[2.3;1.0;12]
+     :.quantQ.math.gamma[z]-.quantQ.math.gammaIncompleteLowerApprox[z;x;n];
  };
  
 .quantQ.math.physHermitePol:{[x;n]
@@ -109,7 +129,7 @@
     // n -- order of polynomial
     if[n=0;:1.0];
     if[n=1;:x];
-    if[n>1;(2.0*x*.z.s[x;n-1])-.z.s[x;n-2]];
+    if[n>1;:(2.0*x*.z.s[x;n-1])-.z.s[x;n-2]];
  };
 
 .quantQ.math.secondChebyshevPol:{[x;n]
@@ -117,7 +137,7 @@
     // n -- order of polynomial
     if[n=0;:1.0];
     if[n=1;:2.0*x];
-    if[n>1;(2.0*x*.z.s[x;n-1])-.z.s[x;n-2]];
+    if[n>1;:(2.0*x*.z.s[x;n-1])-.z.s[x;n-2]];
  }; 
 
 .quantQ.math.getChebyshevFirstRoots:{[n]
@@ -126,8 +146,8 @@
  }; 
  
 .quantQ.math.getChebyshevSecondRoots:{[n]
-    // n -- order of the polynomial to find the roots
-    :{[n;k] cos[.quantQ.math.pi*k%n+1]}[n;] each til n;
+    // n -- order of the polynomial to find the roots: cos(k pi/(n+1)), k=1..n
+    :{[n;k] cos[.quantQ.math.pi*k%n+1]}[n;] each 1+til n;
  }; 
 
 ///////////////////////////////////////////// 
@@ -151,19 +171,19 @@
  };
  
 .quantQ.math.erlangCDF:{[l;k;x;n]
-    // k -- shape
-    // K -- scale
+    // l -- scale
+    // k -- shape, positive integer
     // x -- value
-    // n -- order of approximation used    
-    .quantQ.math.gammaIncompleteLowerApprox[k;x%K;n]%.quantQ.stats.factorial[k-1];
+    // n -- number of series terms used
+    :.quantQ.math.gammaIncompleteLowerApprox[k;x%l;n]%.quantQ.stats.factorial[k-1];
  };
 
 .quantQ.math.gammaPDF:{[x;k;K;n]
     // k -- shape
     // K -- scale
     // x -- value
-    // n -- order of approximation used
-    :reciprocal[.quantQ.math.gammaApprox[k;n]*xexp[K;k]]*xexp[x;k-1]*exp[neg x%K];
+    // n -- unused (kept for compatibility); the gamma function is evaluated with .quantQ.math.gamma
+    :reciprocal[.quantQ.math.gamma[k]*xexp[K;k]]*xexp[x;k-1]*exp[neg x%K];
  };
 
 .quantQ.math.gammaCDF:{[x;k;K;n]
@@ -171,7 +191,8 @@
     // K -- scale
     // x -- value
     // n -- order of approximation used
-    :reciprocal[.quantQ.math.gammaApprox[k;n]]
+    // n -- number of series terms used for the incomplete gamma function
+    :reciprocal[.quantQ.math.gamma[k]]
         *.quantQ.math.gammaIncompleteLowerApprox[k;x%K;n]; 
  };
  
@@ -191,10 +212,11 @@
     x:"f"$x;
     // hardcoded step size
     step:sigma%10000;
-    // starting point
-    sPoint:min[(neg[2*sigma]+(x-mu)%sigma;-6*sigma)];
-    // the CDF (numerical integration)
-    :sum step*.quantQ.math.normalPDF[;mu;sigma] each sPoint+step*til floor[(x-sPoint)%step];
+    // starting point, 8 standard deviations below the mean
+    sPoint:mu-8*sigma;
+    if[x<=sPoint;:0f];
+    // the CDF (midpoint-rule integration of the density)
+    :step*sum .quantQ.math.normalPDF[sPoint+step*0.5+til floor (x-sPoint)%step;mu;sigma2];
  };
        
 .quantQ.math.normalMultiPDF:{[x;mu;sigma2]
@@ -221,12 +243,12 @@
 
     // CDF part
     out:.quantQ.math.normalCDF[x[0];0.0;1.0]*.quantQ.math.normalCDF[x[1];0.0;1.0];
-    // add expansion in rho
+    // add expansion in rho: sum_(k=1..n) rho^k/k! He_(k-1)(x) He_(k-1)(y)
     out+: .quantQ.math.normalPDF[x[0];0.0;1.0]*.quantQ.math.normalPDF[x[1];0.0;1.0]*
         sum {[x;rho;k] :(xexp[rho;k]%.quantQ.stats.factorial[k]) *
-               .quantQ.math.probHermitePol[x[0];k] *
-               .quantQ.math.probHermitePol[x[1];k]   
-        }[x;rho;] each til 1+n;
+               .quantQ.math.probHermitePol[x[0];k-1] *
+               .quantQ.math.probHermitePol[x[1];k-1]   
+        }[x;rho;] each 1+til n;
     // output
     :out;
  };

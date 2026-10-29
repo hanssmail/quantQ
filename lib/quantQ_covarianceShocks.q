@@ -40,8 +40,8 @@
     eigensystem:.quantQ.mat.eigenSystem[Dmat];
     // thresholds
     thresholds:.quantQ.rmt.rangeDTh[Sin;Tin;Sout;Tout];
-    // PCA vectors , row by row
-    Omat: exec weights from {x[`tab]} .quantQ.mat.pca Ein;
+    // PCA vectors of the in-sample covariance, row by row
+    Omat: .quantQ.mat.eigenSystem[Ein][`eigenvectors];
     // Dmat with in-sample projections
     DO:Omat mmu Dmat mmu flip Omat;
     // calculating first fleeting mode
@@ -51,7 +51,7 @@
     // overlap array
     overlapArray: sums z*z:firstFleetingMode mmu flip Omat;
     // output
-    :(eigenvalues`lambdaMax`lambdaMaxNCor`overlap`inSampleVecs`fleetingVecs)!(eigensystem[`eigenvalues];thresholds[`lamMax];thresholds[`blur];overlapArray;Omat;fleetingModes);
+    :(`eigenvalues`lambdaMax`lambdaMaxNCor`overlap`inSampleVecs`fleetingVecs)!(eigensystem[`eigenvalues];thresholds[`lamMax];thresholds[`blur];overlapArray;Omat;fleetingModes);
  };
 
 // wrapper to compare empirical cov matrix step by step
@@ -68,7 +68,6 @@
         // tabF -- input table with features
         // bucket -- parameters
         // iP -- pivot index
-        ![0N;iP];
         dataIn: select from tabF where i<=iP, i>iP-bucket[`Tin]; 
         dataOut: select from tabF where i>iP, i<=iP+bucket[`Tout];  
         :([] index: enlist iP),'flip {key[x]!(enlist each value[x])} .quantQ.rmt.covChange[dataIn;dataOut];

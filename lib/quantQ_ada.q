@@ -67,8 +67,9 @@
     // tabAdaPrediction -- output of .quantQ.ada.adaBoostPrediction function
     truePositive:sum (tabAdaPrediction[`y]=tabAdaPrediction[`prediction]) and (tabAdaPrediction[`y]=1);
     trueNegative:sum (tabAdaPrediction[`y]=tabAdaPrediction[`prediction]) and (tabAdaPrediction[`y]=-1);
-    falsePositive:sum (tabAdaPrediction[`y]=1) and (tabAdaPrediction[`prediction]=-1);
-    falseNegative:sum (tabAdaPrediction[`y]=-1) and (tabAdaPrediction[`prediction]=1);
+    // false positive: predicted 1, actually -1; false negative: predicted -1, actually 1
+    falsePositive:sum (tabAdaPrediction[`y]=-1) and (tabAdaPrediction[`prediction]=1);
+    falseNegative:sum (tabAdaPrediction[`y]=1) and (tabAdaPrediction[`prediction]=-1);
     accuracy:("f"$truePositive+trueNegative)%"f"$count tabAdaPrediction;
     recall:("f"$truePositive)%"f"$(truePositive+falseNegative);
     precision: ("f"$truePositive)%"f"$(truePositive+falsePositive);
