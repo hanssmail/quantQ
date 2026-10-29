@@ -156,7 +156,7 @@ the VAR functions defined above it. The VARX versions are renamed `ztX`, `ZXlag`
 `Y Z' (Z Z')^-1` (the brackets were wrong). `estimateX` passes its locals into its lambdas.
 `estimateNX` forecasts the exogenous series with `estimate1` and recurses; previously it returned a
 lambda without calling it. One open question: `estimateX` still uses `x[;0]` for the contemporaneous
-exogenous term. I left that as it was.
+exogenous term. We left that as it was.
 
 ### Right-to-left evaluation
 
