@@ -14,8 +14,8 @@
     L:0f*A;
     i:j:0;
     do[floor (N*1+N:count A)%2;
-        L[i;j]: $[b:i=j; sqrt A[i;j] - {x mmu x} j#L[j] ;
-            reciprocal[L[j;j]] * A[i;j] - (i#L i)mmu i#L j];
+        L[i;j]: $[b:i=j; sqrt A[i;j] - {sum x*x} j#L[j] ;
+            reciprocal[L[j;j]] * A[i;j] - sum (i#L i)*i#L j];
         i:i+b;
         j:(j+nb)*nb:not b;
     ];

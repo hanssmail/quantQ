@@ -1,7 +1,8 @@
 .quantQ.trees.classify:{[breakpoints;y]
     // breakpoints -- points for tree splits
     // y -- variable to classify 
-    :asc[breakpoints] binr y;
+    // binr written as a count: the number of breakpoints below y
+    :{"j"$sum x<y}[breakpoints] each y;
  };
 
 .quantQ.trees.entropy:{[y;classes]
@@ -72,7 +73,9 @@
     summary: (`infogains`xi`j`infogain!enlist[sampled!is],i,(-1_r)),/:last r:raze info i:first idesc is;
     cnt: count summary;
     rulepathfunc:{[rp;ar;r;i;j] rp,enlist (ar;(`.quantQ.trees.runRule;r;i;j))};
-    :update rule:rule,
+    // the rule is repeated explicitly: some q implementations do not
+    // broadcast a function atom into a column
+    :update rule:cnt#enlist rule,
         rulepath:rulepathfunc[rulepath]'[appliedrule;rule;xi;j] from summary;
  };
 
@@ -105,7 +108,10 @@
     $[ 98<>type r:.quantQ.trees.growTree[; r0:dc _r0] (dc:`x`y`classes`m`maxdepth)#r0;
         raze @[r;where 99h=type each r;enlist];
         r];
-    tree: update p:{x?-1_'x} rulepath  from tree;
+    // each node's parent: the node whose rule path is this one's without its
+    // last rule.  Matched item by item, since find on a general list of
+    // lists is not treated the same way by every q implementation.
+    tree: update p:{{first where x~\:y}[x] each -1_'x} rulepath  from tree;
     :`i`p`path xcols update path:{(x scan)each til count x}p,i:i from tree;
  };
 

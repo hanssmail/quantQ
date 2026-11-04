@@ -2,7 +2,9 @@
     // ts -- list of t-statistics
     convertPDict:((0j;1j;2j;3j;4j)!("-";"* (90% c.l.)";"** (95% c.l.)";"*** (99% c.l.)";
     "**** (99.9% c.l.)"));
-    :convertPDict each binr[(1.282;1.645;2.326;3.091);] abs ts;
+    // the number of critical values below |t| -- what binr gives, written as a
+    // count so that a |t| beyond the last critical value gets the top label
+    :convertPDict {"j"$sum 1.282 1.645 2.326 3.091<x} each abs ts;
  };
 
 .quantQ.ols.rSquared:{[y;yHat]
@@ -80,7 +82,7 @@
         // significance level in normal approximation (econometric)
         convertPDict:((0j;1j;2j;3j;4j)!("-";"* (90% c.l.)";"** (95% c.l.)";"*** (99% c.l.)";
             "**** (99.9% c.l.)"));
-        signLevels: convertPDict each binr[(1.282;1.645;2.326;3.091);abs tStats];
+        signLevels: convertPDict {"j"$sum 1.282 1.645 2.326 3.091<x} each abs tStats;
         // log-likelihood        
         logL:neg[log[2*acos -1]*count[y]%2.0]+neg[log[sqrt[RSS%count[y]]]*count[y]]+
             neg[(1.0%(2.0%count[y]))];

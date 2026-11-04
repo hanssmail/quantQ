@@ -6,7 +6,7 @@
     // return histogram table
     :update 0^histogram from
         ([bins:asc til count[bins]] x:bins) uj
-        (select histogram: count bins by bins from ([] bins:bins binr data));
+        (select histogram: count bins by bins from ([] bins:{"j"$sum x<y}[bins] each data));
  };
 
 .quantQ.stats.expma1:{[lambda;vector]
@@ -18,7 +18,7 @@
 .quantQ.stats.expma:{[lambda;vector]
     // lambda -- memory
     // vector -- data
-    :(first vector)(1-lambda)\vector*lambda;
+    :{[l;r;x] (r*1-l)+x*l}[lambda]\[first vector;vector];
  };
 
 .quantQ.stats.histGrid:{[bins;data]
@@ -99,27 +99,30 @@
     :([] statistics: ("Sample mean";"Sample standard deviation";"Sample skewness";"Sample kurtosis";"Sample min"; "Sample max";"Number of observations";"Number of missing observations");values: (mu; sigma; S;Kurt; mn; mx; K; KminusN));
  };
 
+// position of x among the tabulated quantiles: the first index whose quantile
+// is >= x, as binr gives it (count when x is beyond the table); written as a
+// count so it does not depend on binr's edge cases
+.quantQ.stats.normIndex:{[x] sum (reverse last flip .quantQ.stats.normTable)<x};
+
 .quantQ.stats.pValueTwoSided:{[x]
     // x -- value of test statistics following N(0,1)
     // return corresponding p-value (symmetric in x)
     :2*(reverse first flip .quantQ.stats.normTable) neg[1]+
-        (reverse last flip .quantQ.stats.normTable) binr abs x;
+        .quantQ.stats.normIndex abs x;
  };
 
 .quantQ.stats.pValueLeftSided:{[x]
     // x -- value of test statistics following N(0,1)
     // return corresponding p-value for one-sided left hand side test
     :$[x>=0;1-(reverse first flip .quantQ.stats.normTable) neg[1]+
-        (reverse last flip .quantQ.stats.normTable) binr x;(reverse first flip .quantQ.stats.normTable) 
-        neg[1]+(reverse last flip .quantQ.stats.normTable) binr abs x];
+        .quantQ.stats.normIndex x;(reverse first flip .quantQ.stats.normTable) 
+        neg[1]+.quantQ.stats.normIndex abs x];
  };
 
 .quantQ.stats.pValueRightSided:{[x]
     // x -- value of test statistics following N(0,1)
     // return corresponding p-value for one-sided right hand side test
-    :$[x>=0;(reverse first flip .quantQ.stats.normTable) neg[1]+(reverse last flip .quantQ.stats.normTable) 
-        binr x;1-(reverse first flip .quantQ.stats.normTable) neg[1]+(reverse last flip .quantQ.stats.normTable)          
-        binr abs x];
+    :$[x>=0;(reverse first flip .quantQ.stats.normTable) neg[1]+.quantQ.stats.normIndex x;1-(reverse first flip .quantQ.stats.normTable) neg[1]+.quantQ.stats.normIndex abs x];
  };
 
 .quantQ.stats.tStatsCorr:{[rho;N]
@@ -329,7 +332,7 @@
         where reject;
  };
 
-.quantQ.stats.normTable:((0.0005;3.290527);(0.005;2.575829);(0.01;2.326348);(0.495;0.01253347);(0.5;0));
+.quantQ.stats.normTable:((0.0005;3.290527);(0.005;2.575829);(0.01;2.326348);(0.495;0.01253347);(0.5;0f));
 
 .quantQ.stats.runs:{[x] 0 x\x}"f"$;
 // kept for backwards compatibility (the original name had a namespace typo)

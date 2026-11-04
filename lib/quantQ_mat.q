@@ -129,13 +129,16 @@
     bucketI:({[bucketI]
         // the matrix for inverse iteration
         invMat:(bucketI[`matrix]-bucketI[`eigenVal]*.quantQ.mat.diagMatrix[count[bucketI[`matrix]]]);
+        // the inverse; a singular matrix gives nulls (some q implementations
+        // signal instead, so that is trapped and turned into nulls too)
+        invM:@[inv;invMat;{[n;e] n#enlist n#0n}[count invMat]];
         // the inverse iteration method works for non-singular matrices
-        $[0<sum{[x] (x=0nf) or (x=0wf) or (x=-0wf)} each raze inv[invMat];
+        $[0<sum{[x] (x=0nf) or (x=0wf) or (x=-0wf)} each raze invM;
             // introduce random perturbation
             bucketI[`eigenVal]:bucketI[`eigenVal]+(1e-7)*(neg[1.0]+first 1?2.0);
         [
             vecBOld:bucketI[`vecB];
-            vecB: (1.0% .quantQ.mat.normL1[t])*t:(inv[invMat] mmu vecBOld);
+            vecB: (1.0% .quantQ.mat.normL1[t])*t:(invM mmu vecBOld);
             // set the first element of the random vector to be positive
             $[0<=first vecB; ; vecB:neg vecB];
             // plug into bucket

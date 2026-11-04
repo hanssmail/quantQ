@@ -195,7 +195,7 @@
             bucket[`loopsFinal]:bucket[`loopsFinal],bucket[`loopsTilde][indLoop];
             bucket[`loopsTilde]: bucket[`loopsTilde] where not til[count[bucket[`loopsTilde]]] in indLoop;      
             // check and remove elements not changing    bucket[`loopsTilde] in bucket[`loopsTildeLast]
-            bucket[`loopsTilde]: bucket[`loopsTilde] where not bucket[`loopsTilde] in bucket[`loopsTildeLast];       
+            if[count bucket[`loopsTilde]; bucket[`loopsTilde]: bucket[`loopsTilde] where not bucket[`loopsTilde] in bucket[`loopsTildeLast]];       
             // update loopsTildeLast here
             bucket[`loopsTildeLast]: bucket[`loopsTilde];    
             // update bucket
@@ -267,7 +267,7 @@
             // keep all non-closed paths
             bucket[`loopsTilde]: bucket[`loopsTilde] where not til[count[bucket[`loopsTilde]]] in indLoop; 
             // check and remove elements not changing    bucket[`loopsTilde] in bucket[`loopsTildeLast]
-            bucket[`loopsTilde]: bucket[`loopsTilde] where not bucket[`loopsTilde] in bucket[`loopsTildeLast];       
+            if[count bucket[`loopsTilde]; bucket[`loopsTilde]: bucket[`loopsTilde] where not bucket[`loopsTilde] in bucket[`loopsTildeLast]];       
             // update loopsTildeLast here
             bucket[`loopsTildeLast]: bucket[`loopsTilde];    
             // update bucket

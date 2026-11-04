@@ -92,8 +92,11 @@
     // calculate vector of features for both proteins   
     d1:.quantQ.infth.proteinGetFeatureVector[.quantQ.infth.proteinGetSubstring[p1;N]];
     d2:.quantQ.infth.proteinGetFeatureVector[.quantQ.infth.proteinGetSubstring[p2;N]];
-    // return inner product
-    :exec (0f^d1)$0f^d2 from ([substring: key d1];value d1) uj ([substring: key d2];value d2);
+    // return inner product: only the substrings both proteins have contribute
+    // (computed on the dictionaries directly rather than through a keyed uj
+    // on string keys, which not every q implementation merges)
+    k:key[d1] inter key d2;
+    :$[count k;"f"$sum d1[k]*d2 k;0f];
  };
 
 .quantQ.infth.proteinDistance:{[p1;p2;N]

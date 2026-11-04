@@ -185,3 +185,68 @@ exogenous term. We left that as it was.
 | `upd` | `-3 sublist` instead of `-3#`, which wrapped around when fewer than 3 ticks were cached. |
 | `mat` | `det` of a 1x1 matrix returns a number. |
 | `hopf` | Hebbian descent builds W = target ⊗ input, so that `W mmu input` gives the target. The old orientation could not learn the mapping. |
+
+# Running quantQ on other q implementations
+
+quantQ is written for kdb+. The library and its tests also run on
+[PeachQ](https://github.com/peachq-org/peachq) (tested with 0.89, built from source at commit `0e20de1`)
+and on m:
+
+| | tests | passed | skipped |
+| --- | --- | --- | --- |
+| PeachQ 0.89 | 854 | 853 | 1 |
+| m | 854 | 854 | 0 |
+
+Each change below keeps the result on kdb+ the same. It replaces a construct that PeachQ either does not
+implement or evaluates differently with one that every implementation agrees on. Nothing here has been
+run on kdb+ itself since the changes.
+
+## Library changes
+
+| Module | Was | Now | Why |
+| --- | --- | --- | --- |
+| `io` | `dpftsAppend` written in k (`k)` line) | the same function in q | PeachQ has no k interpreter, so the line stopped the whole library from loading |
+| `io` | `dpftsAppend` amends each column file, sorts the partition on disk and sets `p#` on disk | reads the partition (if any), applies `o`, sorts, sets `p#` in memory, then writes it with `set` | on-disk amend of attributes (`@[path;col;`p#]`) is `'nyi` in PeachQ, as is `upsert` to a splayed path; `.Q.enxs` is missing, so the `` `sym `` domain goes through `.Q.en` |
+| `io` | `saveSplayedTab` / `appendSplayedTab` sort and amend the table on disk, then `upsert` | sort and apply `p#` in memory, then a single `set` | as above |
+| `io` | path built as `` ` sv (dir;`;t;`) `` (gives `dir//t/`) | `` ` sv dir,t,` `` | PeachQ caches mapped tables by path text, so writing through `dir//t/` left a stale mapping for `dir/t/` and the next read was `'corrupt` |
+| `stats` | `expma` as `(first v)(1-l)\v*l` | `{[l;r;x] (r*1-l)+x*l}[l]\[first v;v]` | the numeric-left-operand scan form is a `'type` in PeachQ |
+| `stats` | `pValue*` look up the normal table with `binr` | `.quantQ.stats.normIndex`, a count of the quantiles below `x` | PeachQ's `binr` returns `count-1` instead of `count` past the last element |
+| `stats` | last row of `normTable` was `(0.5;0)` | `(0.5;0f)` | keeps the columns uniform floats |
+| `stats` | `getHistogram` uses `bins binr data` | the same count | the same `binr` edge |
+| `ols` | `signLevels` uses `binr` | the same count | a \|t\| beyond 3.091 got `***` instead of `****` |
+| `trees` | `classify` uses `binr` | the same count | the same `binr` edge |
+| `trees` | `update rule:rule, ...` | `update rule:cnt#enlist rule, ...` | PeachQ does not broadcast a function atom into a column |
+| `trees` | parents found with `x?-1_'x` | matched item by item with `~` | PeachQ's `?` on a general list of lists searches element-wise |
+| `so` | `raze[a;b]` | `a,b` | `raze` is unary in PeachQ (in kdb+ it is `,/`, so it also takes a seed) |
+| `simul` | `{x mmu x}` and `(a)mmu b` on vectors in `choleskyChB` | `sum x*x`, `sum a*b` | PeachQ's `mmu` of two empty vectors is a `'length` instead of `0f` |
+| `tda` | `l where not l in m` when `l` may be empty | guarded by `count l` | in PeachQ `() in list` is the atom `0b` |
+| `infth` | `proteinInnerProduct` through a keyed `uj` on string keys | the dot product over the shared keys of the two dictionaries | PeachQ's keyed `uj` does not merge string keys |
+| `mat` | `inverseIteration` tests a singular matrix for nulls in `inv` | `inv` is trapped and a failure is treated as all nulls | PeachQ signals `'domain` where kdb+ returns nulls |
+
+## Test harness changes
+
+- `.qt.skip[name;why]` records a check that is not run; the summary reports the number skipped.
+- `test_quantQ_io.q` checks the parted attribute only when the q implementation keeps attributes on disk.
+  It probes for this by writing `` `p#1 1 2 `` to a file and reading it back. PeachQ maps columns without
+  their `u`/`g`/`p` attribute by design, so on PeachQ the check is skipped.
+- The summary table is printed row by row instead of with `show`. PeachQ's `show` collapses long tables to
+  a one-line summary, and kdb+'s console truncates them at its `\c` size.
+
+## PeachQ behaviour found along the way
+
+These look like PeachQ gaps rather than intentional differences, and may be worth reporting upstream:
+
+- `binr` past the last element returns `count-1`; kdb+ returns `count`.
+- Mapped splayed tables are cached by path text: `` `:d//t/ `` and `` `:d/t/ `` are different cache keys.
+- Find (`?`) on a general list whose items are lists searches element-wise instead of item-wise.
+- A keyed `uj` on char-vector keys concatenates instead of merging.
+- `raze` takes only one argument.
+- A function atom does not broadcast in an `update` phrase.
+- `() in list` returns the atom `0b`.
+- `mmu` of two empty vectors signals `'length`.
+- `inv` of a singular matrix signals `'domain`.
+- `x b\y` with a numeric `b` is a `'type`.
+- `.Q.enxs` is not defined.
+- `@[path;col;attr]` on a splayed table is `'nyi`, and so is `upsert` to a splayed path.
+
+Running the full suite takes about 7 minutes of wall-clock time on PeachQ, most of it system time.

@@ -11,6 +11,9 @@ q tests/test_quantQ_mat.q        # one module
 cd tests && q runAll.q           # also works from inside tests/
 ```
 
+The same commands work with [PeachQ](https://github.com/peachq-org/peachq) (its binary is also called `q`)
+and with m (`m tests/runAll.q`). See `../COMPATIBILITY.md`.
+
 Each run prints `FAIL` lines as they happen and ends with a per-module table and a list of failures. The
 process exits with status 0 when everything passes and 1 otherwise, so it can be used in CI.
 
@@ -29,6 +32,7 @@ caught and reported as a failure. The rest of the file still runs.
 | `.qt.true[name; {expr}]` | `expr` returns `1b` |
 | `.qt.throws[name; {expr}]` | `expr` signals an error |
 | `x:.qt.fixture[name; {expr}]` | builds test data; an error is recorded as a failure instead of aborting the file |
+| `.qt.skip[name; why]` | not run: prints `SKIP` and is counted separately, for a check the q implementation cannot support |
 
 Two q gotchas to watch for:
 
@@ -53,3 +57,7 @@ tests check properties rather than exact draws.
   makes 854 tests. The patched library has not been run yet, so expect a few follow-ups.
 
 `../CHANGES.md` lists every fix by module, with the tests each one should turn green.
+
+- **PeachQ 0.89:** 853 pass and 1 is skipped. The skipped check is that the parted attribute survives on
+  disk, which PeachQ does not keep by design. **m:** all 854 pass. The changes that made this possible are
+  in `../COMPATIBILITY.md`.

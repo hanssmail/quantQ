@@ -95,6 +95,10 @@ if[0=count .qt.libCandidates; -2 "quantQ tests: cannot find the lib directory (l
     .qt.record[name;ok;$[ok;"";"expected 1b  got ",.qt.str last r]]
  };
 
+/ record that a test was not run, and why: it neither passes nor fails
+.qt.skipped:();
+.qt.skip:{[name;why] .qt.skipped,:enlist (.qt.module;name;why); -1 "  SKIP ",name," :: ",why; };
+
 .qt.throws:{[name;f]
     r:.qt.run f;
     .qt.record[name;not first r;$[first r;"expected an error, got ",.qt.str last r;""]]
@@ -112,10 +116,16 @@ if[0=count .qt.libCandidates; -2 "quantQ tests: cannot find the lib directory (l
 / reporting
 .qt.summary:{[]
     -1 "";
-    show select tests:count i, passed:sum ok, failed:sum not ok by module from .qt.results;
+    / printed row by row rather than with show, which a q console may truncate
+    / (kdb+ to its \c size, PeachQ to a summary) when there are many modules
+    s:0!select tests:count i, passed:sum ok, failed:sum not ok by module from .qt.results;
+    w:2+max 6,count each string s`module;
+    -1 (w$"module"),"tests  passed  failed";
+    -1 (w+22)#"-";
+    {[w;r] -1 (w$string r`module),(-5$string r`tests),(-8$string r`passed),-8$string r`failed}[w] each s;
     nf:sum not .qt.results`ok;
     -1 "";
-    -1 string[count .qt.results]," tests, ",string[nf]," failed";
+    -1 string[count .qt.results]," tests, ",string[nf]," failed",$[count .qt.skipped;", ",string[count .qt.skipped]," skipped";""];
     if[nf>0;
         -1 "";
         -1 "Failures:";

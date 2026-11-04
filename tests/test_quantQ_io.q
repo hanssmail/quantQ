@@ -13,7 +13,12 @@ ioMore:([] sym:`b`a; px:6 7f; qty:60 70);
 .qt.true["saveSplayedTab writes the table";{.quantQ.io.saveSplayedTab[ioPath;`sym;`ioTab]; 0<count key ` sv ioPath,`ioTab}];
 .qt.true["saveSplayedTab: reloaded rows are sorted by the parted column";{t:get ` sv ioPath,`ioTab,`; (`$string t`sym)~`a`a`b`c`c}];
 .qt.true["saveSplayedTab: values survive the round trip";{t:get ` sv ioPath,`ioTab,`; e:`sym xasc ioTab; (t[`px]~e`px) and t[`qty]~e`qty}];
-.qt.eq["saveSplayedTab applies the parted attribute";{attr (get ` sv ioPath,`ioTab,`)`sym};`p];
+/ the attribute is only checked where the q implementation keeps attributes on disk: kdb+ does,
+/ PeachQ maps columns without their u/g/p attribute (by design)
+ioKeepsAttr:{f:` sv ioPath,`attrProbe; f set `p#1 1 2; `p~attr get f}[];
+$[ioKeepsAttr;
+    .qt.eq["saveSplayedTab applies the parted attribute";{attr (get ` sv ioPath,`ioTab,`)`sym};`p];
+    .qt.skip["saveSplayedTab applies the parted attribute";"this q does not keep attributes on disk"]];
 .qt.true["appendSplayedTab appends and keeps the table sorted";{.quantQ.io.appendSplayedTab[ioPath;`sym;`ioTab;ioMore]; t:get ` sv ioPath,`ioTab,`; (7=count t) and (`$string t`sym)~`a`a`a`b`b`c`c}];
 
 / dpftsAppend: like .Q.dpft, but amends the partition with a given operator (here: append)

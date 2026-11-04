@@ -35,7 +35,7 @@
     // example: {wsum[x;x]} .quantQ.so.randNSphere[1.0;3]
     // example: 1={wsum[x;x]} .quantQ.so.randNSphere[1.0;3]
     $[nDim>2;
-        coord:.quantQ.so.sph2Eucl[(r;raze[(nDim-2)?2*acos[0];1?4*acos[0]])];
+        coord:.quantQ.so.sph2Eucl[(r;((nDim-2)?2*acos[0]),1?4*acos[0])];
         coord:.quantQ.so.sph2Eucl[(r;1?4*acos[0])]
     ];
     :coord;
