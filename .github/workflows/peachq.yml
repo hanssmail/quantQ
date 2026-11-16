@@ -1,0 +1,26 @@
+# Optional: not a required check.
+name: tests (optional)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - id: pq
+        uses: peachq-org/setup-peachq@v1.0.0
+        with:
+          version: 0.92.20261116
+      - shell: bash
+        run: |
+          $QCMD tests/runAll.q -classic | tee out.txt
+          echo "**peachq ${{ steps.pq.outputs.version }}:** $(grep -E '^[0-9]+ tests, [0-9]+ failed' out.txt | tail -1)" >> "$GITHUB_STEP_SUMMARY"
